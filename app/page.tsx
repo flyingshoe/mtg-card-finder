@@ -113,12 +113,16 @@ export default function Home() {
 
   if (loading) {
     return (
-      <Container>
-        <Skeleton />
-        <Skeleton />
-        <Skeleton />
-        <Skeleton />
-        <Skeleton />
+      <Container className="mt-8">
+        <Skeleton width="100%"/>
+        <Skeleton width="90%"/>
+        <Skeleton width="80%"/>
+        <Skeleton width="90%"/>
+        <Skeleton width="70%"/>
+        <Skeleton width="60%" />
+        <Skeleton width="80%"/>
+        <Skeleton width="90%"/>
+        <Skeleton width="70%"/>
         <Skeleton width="60%" />
       </Container>
     );
