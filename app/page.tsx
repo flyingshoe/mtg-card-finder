@@ -152,39 +152,27 @@ export default function Home() {
                 <TextField
                   label="Card Name"
                   name="name"
+                  className="w-full sm:w-full md:w-auto"
                   sx={{
                     marginBottom: 2,
-                    width: {
-                      xs: "100%", 
-                      sm: "100%", 
-                      md: "auto", 
-                    },
                   }}
                   defaultValue={savedQuery.name}
                 />
                 <TextField
                   label="Card Type"
                   name="type"
+                  className="w-full sm:w-full md:w-auto"
                   sx={{
                     marginBottom: 2,
-                    width: {
-                      xs: "100%", 
-                      sm: "100%", 
-                      md: "auto", 
-                    },
                   }}
                   defaultValue={savedQuery.type}
                 />
                 <TextField
                   label="Card Text"
                   name="text"
+                  className="w-full sm:w-full md:w-auto"
                   sx={{
                     marginBottom: 2,
-                    width: {
-                      xs: "100%", 
-                      sm: "100%", 
-                      md: "auto", 
-                    },
                   }}
                   defaultValue={savedQuery.text}
                 />
