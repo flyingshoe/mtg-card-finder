@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AppBar,
   Button,
   Checkbox,
   Container,
@@ -8,8 +9,10 @@ import {
   Fab,
   FormControlLabel,
   FormGroup,
+  Pagination,
   Skeleton,
   TextField,
+  Toolbar,
   Typography,
 } from "@mui/material";
 import MtgCard, { CardProps } from "./components/card";
@@ -31,12 +34,16 @@ export default function Home() {
   const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(
     {} as SavedQueryProps
   );
+  const [showPaginationBar, setShowPaginationBar] = useState(false);
+  const [pageSize, setPageSize] = useState("20");
+  const [pageNumber, setPageNumber] = useState("1");
+  const [totalPages, setTotalPages] = useState(1);
 
   const toggleDrawer = () => {
     setShowDrawer((open) => !open);
   };
 
-  async function fetchCard(searchQuery: SavedQueryProps) {
+  async function fetchCard(searchQuery: SavedQueryProps, pageNumber: string) {
     setShowDrawer(false);
     setLoading(true);
 
@@ -48,11 +55,22 @@ export default function Home() {
               if (value) acc[key] = value;
               return acc;
             },
-            { contains: "imageUrl" } as Record<string, string>
+            {
+              contains: "imageUrl",
+              pageSize: pageSize,
+              page: pageNumber,
+            } as Record<string, string>
           )
         ).toString()}`
       )
       .then((res) => {
+        // Based on total count, we calculate the number of pages
+        const totalCount: number = parseInt(res.headers["total-count"]);
+        const totalPages: number = Math.ceil(totalCount / parseInt(pageSize));
+
+        setTotalPages(totalPages);
+        setShowPaginationBar(totalPages > 1);
+
         const seen = new Set();
         const filteredList = res.data.cards
           .filter((card: CardProps) => {
@@ -89,7 +107,8 @@ export default function Home() {
     };
 
     setSavedQuery(data);
-    fetchCard(data);
+    setPageNumber("1"); // reset page number to 1
+    fetchCard(data, "1");
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,33 +130,31 @@ export default function Home() {
     });
   };
 
-  if (loading) {
-    return (
-      <Container className="mt-8">
-        <Skeleton width="100%"/>
-        <Skeleton width="90%"/>
-        <Skeleton width="80%"/>
-        <Skeleton width="90%"/>
-        <Skeleton width="70%"/>
-        <Skeleton width="60%" />
-        <Skeleton width="80%"/>
-        <Skeleton width="90%"/>
-        <Skeleton width="70%"/>
-        <Skeleton width="60%" />
-      </Container>
-    );
-  }
-
   return (
     <Container maxWidth="xl">
       <main className="flex flex-wrap justify-start">
-        {cardList.map((card: CardProps) => (
-          <MtgCard
-            key={card.id}
-            imageUrl={card.imageUrl}
-            multiverseid={card.multiverseid}
-          />
-        ))}
+        {loading ? (
+          <Container className="mt-8">
+            <Skeleton width="100%" />
+            <Skeleton width="90%" />
+            <Skeleton width="80%" />
+            <Skeleton width="90%" />
+            <Skeleton width="70%" />
+            <Skeleton width="60%" />
+            <Skeleton width="80%" />
+            <Skeleton width="90%" />
+            <Skeleton width="70%" />
+            <Skeleton width="60%" />
+          </Container>
+        ) : (
+          cardList.map((card: CardProps) => (
+            <MtgCard
+              key={card.id}
+              imageUrl={card.imageUrl}
+              multiverseid={card.multiverseid}
+            />
+          ))
+        )}
 
         <Drawer
           open={showDrawer}
@@ -239,7 +256,7 @@ export default function Home() {
           aria-label="search"
           sx={{
             position: "fixed",
-            bottom: 16,
+            bottom: showPaginationBar ? 72 : 16,
             right: 16,
             backgroundColor: "rgb(170, 224, 250)",
             "&:hover": {
@@ -256,6 +273,32 @@ export default function Home() {
           />
         </Fab>
       </main>
+      <footer>
+        {showPaginationBar && (
+          <AppBar
+            position="fixed"
+            sx={{
+              top: "auto",
+              bottom: 0,
+              backgroundColor: "rgba(255,255,255,0.8)",
+              backdropFilter: "blur(3px)",
+            }}
+          >
+            <Toolbar className="flex justify-center">
+              <Pagination
+                color="primary"
+                count={totalPages}
+                page={parseInt(pageNumber)}
+                onChange={(_, pageNo) => {
+                  const newPageNo = pageNo.toString();
+                  setPageNumber(newPageNo);
+                  fetchCard(savedQuery, newPageNo);
+                }}
+              />
+            </Toolbar>
+          </AppBar>
+        )}
+      </footer>
     </Container>
   );
 }
