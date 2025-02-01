@@ -194,7 +194,7 @@ export default function Home() {
                     }
                     label={
                       <Image
-                        src={`/images/${color}_mana.svg`}
+                        src={`/images/${color.toLowerCase()}_mana.svg`}
                         width={40}
                         height={40}
                         alt={`${color}_mana_icon`}
