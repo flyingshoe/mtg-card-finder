@@ -7,9 +7,13 @@ import {
   Container,
   Drawer,
   Fab,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Skeleton,
   TextField,
   Toolbar,
@@ -131,7 +135,7 @@ export default function Home() {
   };
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" className="mt-4">
       <main className="flex flex-wrap justify-start">
         {loading ? (
           <Container className="mt-8">
@@ -155,6 +159,9 @@ export default function Home() {
             />
           ))
         )}
+
+        {/* Spacer */}
+        <div className="h-28 w-full"></div>
 
         <Drawer
           open={showDrawer}
@@ -200,7 +207,32 @@ export default function Home() {
                   }}
                   defaultValue={savedQuery.text}
                 />
+
+                <FormControl
+                  className="w-full sm:w-full md:w-32"
+                  sx={{
+                    marginBottom: 2,
+                  }}
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Page Size
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={pageSize}
+                    label="Page Size"
+                    onChange={(e) => setPageSize(e.target.value)}
+                  >
+                    {[10, 20, 50, 100].map((size) => (
+                      <MenuItem key={size} value={size}>
+                        {size}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
+
               <FormGroup row>
                 {Object.keys(MtgColors).map((color) => (
                   <FormControlLabel
@@ -228,10 +260,12 @@ export default function Home() {
                   />
                 ))}
               </FormGroup>
-              <div className="flex flex-row justify-end space-x-4">
+
+              <div className="flex flex-row justify-end space-x-4 mt-4">
                 <Button
                   startIcon={<Refresh />}
                   onClick={() => {
+                    setPageSize("20");
                     setSavedQuery({} as SavedQueryProps);
                     toggleDrawer();
                     setTimeout(() => {
