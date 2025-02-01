@@ -1,101 +1,266 @@
+"use client";
+
+import {
+  Button,
+  Checkbox,
+  Container,
+  Drawer,
+  Fab,
+  FormControlLabel,
+  FormGroup,
+  Skeleton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import MtgCard, { CardProps } from "./components/card";
+import { Refresh, Search } from "@mui/icons-material";
+import { useState } from "react";
+import axios from "axios";
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+interface SavedQueryProps {
+  name: string;
+  type: string;
+  text: string;
+  colors: string;
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+export default function Home() {
+  const [showDrawer, setShowDrawer] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(
+    {} as SavedQueryProps
+  );
+
+  const toggleDrawer = () => {
+    setShowDrawer((open) => !open);
+  };
+
+  async function fetchCard(searchQuery: SavedQueryProps) {
+    setShowDrawer(false);
+    setLoading(true);
+
+    axios
+      .get(
+        `https://api.magicthegathering.io/v1/cards?${new URLSearchParams(
+          Object.entries(searchQuery).reduce((acc, [key, value]) => {
+            if (value) acc[key] = value;
+            return acc;
+          }, {} as Record<string, string>)
+        ).toString()}`
+      )
+      .then((res) => {
+        const seen = new Set();
+        const filteredList = res.data.cards
+          .filter((card: CardProps) => {
+            if (!card.imageUrl || seen.has(card.name)) return false;
+            seen.add(card.name);
+            return true;
+          })
+          .sort((a: CardProps, b: CardProps) => (a.cmc ?? 0) - (b.cmc ?? 0));
+
+        setCardList(filteredList);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  const [cardList, setCardList] = useState([]);
+  enum MtgColors {
+    WHITE = "W",
+    BLACK = "B",
+    GREEN = "G",
+    BLUE = "U",
+    RED = "R",
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const data: SavedQueryProps = {
+      name: formData.get("name") as string,
+      type: formData.get("type") as string,
+      text: formData.get("text") as string,
+      colors: savedQuery.colors,
+    };
+
+    setSavedQuery(data);
+    fetchCard(data);
+  };
+
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    setSavedQuery((prevState) => {
+      let newColors = prevState.colors;
+      if (checked) {
+        newColors = newColors ? `${newColors}|${value}` : value;
+      } else {
+        newColors = newColors
+          .split("|")
+          .filter((color) => color !== value)
+          .join("|");
+      }
+      return {
+        ...prevState,
+        colors: newColors,
+      };
+    });
+  };
+
+  if (loading) {
+    return (
+      <Container>
+        <Skeleton />
+        <Skeleton />
+        <Skeleton />
+        <Skeleton />
+        <Skeleton />
+        <Skeleton width="60%" />
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="xl">
+      <main className="flex flex-wrap justify-start">
+        {cardList.map((card: CardProps) => (
+          <MtgCard
+            key={card.id}
+            imageUrl={card.imageUrl}
+            multiverseid={card.multiverseid}
+          />
+        ))}
+
+        <Drawer
+          open={showDrawer}
+          onClose={toggleDrawer}
+          anchor="top"
+          sx={{
+            "& .MuiDrawer-paper": {
+              backgroundColor: "rgba(255,255,255,0.95)",
+              backdropFilter: "blur(3px)",
+            },
+          }}
+        >
+          <Container className="py-8">
+            <Typography variant="h4" gutterBottom color="info">
+              MTG Card Finder
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <div className="flex flex-wrap md:space-x-8">
+                <TextField
+                  label="Card Name"
+                  name="name"
+                  sx={{
+                    marginBottom: 2,
+                    width: {
+                      xs: "100%", 
+                      sm: "100%", 
+                      md: "auto", 
+                    },
+                  }}
+                  defaultValue={savedQuery.name}
+                />
+                <TextField
+                  label="Card Type"
+                  name="type"
+                  sx={{
+                    marginBottom: 2,
+                    width: {
+                      xs: "100%", 
+                      sm: "100%", 
+                      md: "auto", 
+                    },
+                  }}
+                  defaultValue={savedQuery.type}
+                />
+                <TextField
+                  label="Card Text"
+                  name="text"
+                  sx={{
+                    marginBottom: 2,
+                    width: {
+                      xs: "100%", 
+                      sm: "100%", 
+                      md: "auto", 
+                    },
+                  }}
+                  defaultValue={savedQuery.text}
+                />
+              </div>
+              <FormGroup row>
+                {Object.keys(MtgColors).map((color) => (
+                  <FormControlLabel
+                    key={color}
+                    control={
+                      <Checkbox
+                        size="large"
+                        onChange={handleColorChange}
+                        checked={
+                          savedQuery.colors?.includes(
+                            MtgColors[color as keyof typeof MtgColors]
+                          ) ?? false
+                        }
+                      />
+                    }
+                    label={
+                      <Image
+                        src={`/images/${color}_mana.svg`}
+                        width={40}
+                        height={40}
+                        alt={`${color}_mana_icon`}
+                      />
+                    }
+                    value={MtgColors[color as keyof typeof MtgColors]}
+                  />
+                ))}
+              </FormGroup>
+              <div className="flex flex-row justify-end space-x-4">
+                <Button
+                  startIcon={<Refresh />}
+                  onClick={() => {
+                    setSavedQuery({} as SavedQueryProps);
+                    toggleDrawer();
+                    setTimeout(() => {
+                      toggleDrawer();
+                    }, 300);
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  startIcon={<Search />}
+                  variant="contained"
+                  type="submit"
+                >
+                  Search
+                </Button>
+              </div>
+            </form>
+          </Container>
+        </Drawer>
+        <Fab
+          aria-label="search"
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+            backgroundColor: "rgb(170, 224, 250)",
+            "&:hover": {
+              backgroundColor: "rgb(170, 224, 250)",
+            },
+          }}
+          onClick={toggleDrawer}
+        >
+          <Image
+            src={`/images/blue_mana.svg`}
+            width={40}
+            height={40}
+            alt={`mtg_icon`}
+          />
+        </Fab>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </Container>
   );
 }
