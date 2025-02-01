@@ -43,17 +43,20 @@ export default function Home() {
     axios
       .get(
         `https://api.magicthegathering.io/v1/cards?${new URLSearchParams(
-          Object.entries(searchQuery).reduce((acc, [key, value]) => {
-            if (value) acc[key] = value;
-            return acc;
-          }, {} as Record<string, string>)
+          Object.entries(searchQuery).reduce(
+            (acc, [key, value]) => {
+              if (value) acc[key] = value;
+              return acc;
+            },
+            { contains: "imageUrl" } as Record<string, string>
+          )
         ).toString()}`
       )
       .then((res) => {
         const seen = new Set();
         const filteredList = res.data.cards
           .filter((card: CardProps) => {
-            if (!card.imageUrl || seen.has(card.name)) return false;
+            if (seen.has(card.name)) return false;
             seen.add(card.name);
             return true;
           })
