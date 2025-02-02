@@ -135,8 +135,8 @@ export default function Home() {
   };
 
   return (
-    <Container maxWidth="xl" className="mt-4">
-      <main className="flex flex-wrap justify-start">
+    <Container maxWidth="xl">
+      <main>
         {loading ? (
           <Container className="mt-8">
             <Skeleton width="100%" />
@@ -150,18 +150,28 @@ export default function Home() {
             <Skeleton width="70%" />
             <Skeleton width="60%" />
           </Container>
-        ) : (
-          cardList.map((card: CardProps) => (
-            <MtgCard
-              key={card.id}
-              imageUrl={card.imageUrl}
-              multiverseid={card.multiverseid}
+        ) : cardList.length == 0 && showDrawer == false ? (
+          <div className="flex justify-center items-center w-full h-screen">
+            <Image
+              src="/images/card_not_found.webp"
+              width={500}
+              height={500}
+              alt="card_not_found_image"
             />
-          ))
+          </div>
+        ) : (
+          <div className="flex flex-wrap justify-start mt-4">
+            {cardList.map((card: CardProps) => (
+              <MtgCard
+                key={card.id}
+                imageUrl={card.imageUrl}
+                multiverseid={card.multiverseid}
+              />
+            ))}
+            {/* Spacer */}
+            <div className="h-28 w-full"></div>
+          </div>
         )}
-
-        {/* Spacer */}
-        <div className="h-28 w-full"></div>
 
         <Drawer
           open={showDrawer}
