@@ -56,7 +56,7 @@ export default function Home() {
         `https://api.magicthegathering.io/v1/cards?${new URLSearchParams(
           Object.entries(searchQuery).reduce(
             (acc, [key, value]) => {
-              if (value) acc[key] = value;
+              if (value) acc[key] = value.trim();
               return acc;
             },
             {
