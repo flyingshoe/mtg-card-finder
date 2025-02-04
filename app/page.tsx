@@ -198,7 +198,7 @@ export default function Home() {
 
     const query = [
       name,
-      colors && `(c<=${colors} or c:colorless)`,
+      colors && `(id<=${colors} or id:colorless)`,
       type && `t:${type}`,
       text && `o:${text}`,
       `f:commander (game:paper)`,
