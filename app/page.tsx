@@ -311,7 +311,7 @@ export default function Home() {
             <Skeleton width="60%" />
           </Container>
         ) : cardList.length == 0 && showDrawer == false ? (
-          <div className="flex justify-center items-center w-full h-screen">
+          <div className="flex justify-center items-center w-full h-svh">
             <Image
               src="/images/card_not_found.webp"
               width={500}
