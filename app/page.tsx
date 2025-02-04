@@ -213,8 +213,16 @@ export default function Home() {
     const query = [
       name,
       generateColorQuery(colors, colorless),
-      type && `t:${type}`,
-      text && `o:${text}`,
+      type &&
+        `(${type
+          .split(" ")
+          .map((q) => `t:${q}`)
+          .join(" ")})`,
+      text &&
+        `(${text
+          .split(" ")
+          .map((q) => `o:${q}`)
+          .join(" ")})`,
       `f:commander (game:paper)`,
     ];
 
