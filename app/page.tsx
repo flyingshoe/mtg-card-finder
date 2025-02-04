@@ -26,6 +26,7 @@ interface SavedQueryProps {
   type: string;
   text: string;
   colors: string;
+  colorless: string;
 }
 
 type ImageUris = {
@@ -189,8 +190,21 @@ export default function Home() {
     setShowDrawer((open) => !open);
   };
 
+  function generateColorQuery(colors: string, colorless: string) {
+    if (colors && colorless) {
+      return `(id<=${colors} or id:colorless)`;
+    }
+    if (colors) {
+      return `id<=${colors} -id:colorless`;
+    }
+    if (colorless) {
+      return "id:colorless";
+    }
+    return "";
+  }
+
   async function fetchCard(
-    { name, colors, type, text }: SavedQueryProps,
+    { name, colors, type, text, colorless }: SavedQueryProps,
     pageNumber: string
   ) {
     setShowDrawer(false);
@@ -198,7 +212,7 @@ export default function Home() {
 
     const query = [
       name,
-      colors && `(id<=${colors} or id:colorless)`,
+      generateColorQuery(colors, colorless),
       type && `t:${type}`,
       text && `o:${text}`,
       `f:commander (game:paper)`,
@@ -245,6 +259,7 @@ export default function Home() {
       type: formData.get("type") as string,
       text: formData.get("text") as string,
       colors: savedQuery.colors,
+      colorless: formData.get("colorless") as string,
     };
 
     setSavedQuery(data);
@@ -327,7 +342,7 @@ export default function Home() {
         >
           <Container className="py-8">
             <Typography variant="h4" gutterBottom color="info">
-              MTG Card Finder
+              MTG Commander Card Finder
             </Typography>
             <form onSubmit={handleSubmit}>
               <div className="flex flex-wrap md:space-x-8">
@@ -386,6 +401,24 @@ export default function Home() {
                     value={MtgColors[color as keyof typeof MtgColors]}
                   />
                 ))}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="large"
+                      defaultChecked={savedQuery.colorless != null}
+                    />
+                  }
+                  name="colorless"
+                  value="colorless"
+                  label={
+                    <Image
+                      src="/images/colorless_mana.svg"
+                      width={40}
+                      height={40}
+                      alt="colorless_mana_icon"
+                    />
+                  }
+                />
               </FormGroup>
 
               <div className="flex flex-row justify-end space-x-4 mt-4">
