@@ -7,19 +7,15 @@ import {
   Container,
   Drawer,
   Fab,
-  FormControl,
   FormControlLabel,
   FormGroup,
-  InputLabel,
-  MenuItem,
   Pagination,
-  Select,
   Skeleton,
   TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
-import MtgCard, { CardProps } from "./components/card";
+import MtgCard from "./components/card";
 import { Refresh, Search } from "@mui/icons-material";
 import { useState } from "react";
 import axios from "axios";
@@ -32,6 +28,152 @@ interface SavedQueryProps {
   colors: string;
 }
 
+type ImageUris = {
+  small: string;
+  normal: string;
+  large: string;
+  png: string;
+  art_crop: string;
+  border_crop: string;
+};
+
+type RelatedCard = {
+  object: "related_card";
+  id: string;
+  component: string;
+  name: string;
+  type_line: string;
+  uri: string;
+};
+
+type Legalities = Record<
+  | "standard"
+  | "future"
+  | "historic"
+  | "timeless"
+  | "gladiator"
+  | "pioneer"
+  | "explorer"
+  | "modern"
+  | "legacy"
+  | "pauper"
+  | "vintage"
+  | "penny"
+  | "commander"
+  | "oathbreaker"
+  | "standardbrawl"
+  | "brawl"
+  | "alchemy"
+  | "paupercommander"
+  | "duel"
+  | "oldschool"
+  | "premodern"
+  | "predh",
+  "legal" | "not_legal"
+>;
+
+type Prices = {
+  usd: string | null;
+  usd_foil: string | null;
+  usd_etched: string | null;
+  eur: string | null;
+  eur_foil: string | null;
+  tix: string | null;
+};
+
+type RelatedUris = {
+  tcgplayer_infinite_articles: string;
+  tcgplayer_infinite_decks: string;
+  edhrec: string;
+};
+
+type CardFace = {
+  object: "card_face";
+  name: string;
+  mana_cost: string;
+  type_line: string;
+  oracle_text: string;
+  colors: string[];
+  power?: string;
+  toughness?: string;
+  artist: string;
+  artist_id: string;
+  illustration_id: string;
+  image_uris: {
+    small: string;
+    normal: string;
+    large: string;
+    png: string;
+    art_crop: string;
+    border_crop: string;
+  };
+  color_indicator?: string[];
+};
+
+type ScryfallCard = {
+  object: "card";
+  id: string;
+  oracle_id: string;
+  multiverse_ids: number[];
+  arena_id?: number;
+  name: string;
+  lang: string;
+  released_at: string;
+  uri: string;
+  scryfall_uri: string;
+  layout: string;
+  highres_image: boolean;
+  card_faces: CardFace[];
+  image_status: string;
+  image_uris: ImageUris;
+  mana_cost: string;
+  cmc: number;
+  type_line: string;
+  oracle_text: string;
+  power?: string;
+  toughness?: string;
+  colors: string[];
+  color_identity: string[];
+  keywords: string[];
+  all_parts?: RelatedCard[];
+  legalities: Legalities;
+  games: string[];
+  reserved: boolean;
+  foil: boolean;
+  nonfoil: boolean;
+  finishes: string[];
+  oversized: boolean;
+  promo: boolean;
+  reprint: boolean;
+  variation: boolean;
+  set_id: string;
+  set: string;
+  set_name: string;
+  set_type: string;
+  set_uri: string;
+  set_search_uri: string;
+  scryfall_set_uri: string;
+  rulings_uri: string;
+  prints_search_uri: string;
+  collector_number: string;
+  digital: boolean;
+  rarity: string;
+  card_back_id: string;
+  artist: string;
+  artist_ids: string[];
+  illustration_id: string;
+  border_color: string;
+  frame: string;
+  security_stamp?: string;
+  full_art: boolean;
+  textless: boolean;
+  booster: boolean;
+  story_spotlight: boolean;
+  promo_types?: string[];
+  prices: Prices;
+  related_uris: RelatedUris;
+};
+
 export default function Home() {
   const [showDrawer, setShowDrawer] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -39,7 +181,7 @@ export default function Home() {
     {} as SavedQueryProps
   );
   const [showPaginationBar, setShowPaginationBar] = useState(false);
-  const [pageSize, setPageSize] = useState("20");
+  const pageSize = 175;
   const [pageNumber, setPageNumber] = useState("1");
   const [totalPages, setTotalPages] = useState(1);
 
@@ -47,44 +189,39 @@ export default function Home() {
     setShowDrawer((open) => !open);
   };
 
-  async function fetchCard(searchQuery: SavedQueryProps, pageNumber: string) {
+  async function fetchCard(
+    { name, colors, type, text }: SavedQueryProps,
+    pageNumber: string
+  ) {
     setShowDrawer(false);
     setLoading(true);
 
+    const query = [
+      name,
+      colors && `(c<=${colors} or c:colorless)`,
+      type && `t:${type}`,
+      text && `o:${text}`,
+      `f:commander (game:paper)`,
+    ];
+
+    const searchParams = new URLSearchParams({
+      page: pageNumber,
+      order: "cmc",
+      q: query.filter((el) => el).join(" "),
+    });
+
     axios
-      .get(
-        `https://api.magicthegathering.io/v1/cards?${new URLSearchParams(
-          Object.entries(searchQuery).reduce(
-            (acc, [key, value]) => {
-              if (value) acc[key] = value.trim();
-              return acc;
-            },
-            {
-              contains: "imageUrl",
-              pageSize: pageSize,
-              page: pageNumber,
-            } as Record<string, string>
-          )
-        ).toString()}`
-      )
+      .get(`https://api.scryfall.com/cards/search?${searchParams}`)
       .then((res) => {
         // Based on total count, we calculate the number of pages
-        const totalCount: number = parseInt(res.headers["total-count"]);
-        const totalPages: number = Math.ceil(totalCount / parseInt(pageSize));
-
+        const totalCount: number = parseInt(res.data.total_cards);
+        const totalPages: number = Math.ceil(totalCount / pageSize);
         setTotalPages(totalPages);
         setShowPaginationBar(totalPages > 1);
-
-        const seen = new Set();
-        const filteredList = res.data.cards
-          .filter((card: CardProps) => {
-            if (seen.has(card.name)) return false;
-            seen.add(card.name);
-            return true;
-          })
-          .sort((a: CardProps, b: CardProps) => (a.cmc ?? 0) - (b.cmc ?? 0));
-
-        setCardList(filteredList);
+        setCardList(res.data.data);
+      })
+      .catch(() => {
+        setCardList([]);
       })
       .finally(() => {
         setLoading(false);
@@ -120,12 +257,12 @@ export default function Home() {
     setSavedQuery((prevState) => {
       let newColors = prevState.colors;
       if (checked) {
-        newColors = newColors ? `${newColors}|${value}` : value;
+        newColors = newColors ? `${newColors}${value}` : value;
       } else {
         newColors = newColors
-          .split("|")
+          .split("")
           .filter((color) => color !== value)
-          .join("|");
+          .join("");
       }
       return {
         ...prevState,
@@ -161,11 +298,15 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex flex-wrap justify-start mt-4">
-            {cardList.map((card: CardProps) => (
+            {cardList.map((card: ScryfallCard) => (
               <MtgCard
                 key={card.id}
-                imageUrl={card.imageUrl}
-                multiverseid={card.multiverseid}
+                imageSrc={
+                  (card.image_uris?.normal ||
+                    card?.card_faces?.[0]?.image_uris?.normal) ??
+                  "images/mtg-card-back.jpeg"
+                }
+                linkUrl={card?.scryfall_uri}
               />
             ))}
             {/* Spacer */}
@@ -217,30 +358,6 @@ export default function Home() {
                   }}
                   defaultValue={savedQuery.text}
                 />
-
-                <FormControl
-                  className="w-full sm:w-full md:w-32"
-                  sx={{
-                    marginBottom: 2,
-                  }}
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Page Size
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={pageSize}
-                    label="Page Size"
-                    onChange={(e) => setPageSize(e.target.value)}
-                  >
-                    {[10, 20, 50, 100].map((size) => (
-                      <MenuItem key={size} value={size}>
-                        {size}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
               </div>
 
               <FormGroup row>
@@ -272,26 +389,27 @@ export default function Home() {
               </FormGroup>
 
               <div className="flex flex-row justify-end space-x-4 mt-4">
-                <Button
-                  startIcon={<Refresh />}
-                  onClick={() => {
-                    setPageSize("20");
-                    setSavedQuery({} as SavedQueryProps);
-                    toggleDrawer();
-                    setTimeout(() => {
+                <div>
+                  <Button
+                    startIcon={<Refresh />}
+                    onClick={() => {
+                      setSavedQuery({} as SavedQueryProps);
                       toggleDrawer();
-                    }, 300);
-                  }}
-                >
-                  Reset
-                </Button>
-                <Button
-                  startIcon={<Search />}
-                  variant="contained"
-                  type="submit"
-                >
-                  Search
-                </Button>
+                      setTimeout(() => {
+                        toggleDrawer();
+                      }, 300);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    startIcon={<Search />}
+                    variant="contained"
+                    type="submit"
+                  >
+                    Search
+                  </Button>
+                </div>
               </div>
             </form>
           </Container>
