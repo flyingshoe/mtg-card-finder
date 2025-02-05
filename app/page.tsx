@@ -406,7 +406,7 @@ export default function Home() {
               />
             </div>
           ) : (
-            <div className="flex flex-wrap justify-start mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
               {cardList.map((card: ScryfallCard) => (
                 <MtgCard
                   key={card.id}

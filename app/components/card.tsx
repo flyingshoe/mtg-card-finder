@@ -11,7 +11,7 @@ export interface CardProps {
 export default function MtgCard({ imageSrc, linkUrl }: CardProps) {
   return (
     <img
-      className="cursor-pointer duration-300 hover:scale-110 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2"
+      className="rounded-2xl cursor-pointer duration-300 hover:scale-110"
       src={imageSrc}
       onClick={() => window.open(linkUrl, "_blank")}
     />
