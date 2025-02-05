@@ -428,12 +428,13 @@ export default function Home() {
             open={showDrawer}
             onClose={toggleDrawer}
             anchor="top"
-            // sx={{
-            //   "& .MuiDrawer-paper": {
-            //     backgroundColor: "rgba(255,255,255,0.95)",
-            //     backdropFilter: "blur(3px)",
-            //   },
-            // }}
+            sx={{
+              "& .MuiDrawer-paper": {
+                backgroundColor: (theme) =>
+                  `${theme.palette.background.paper}E6`,
+                backdropFilter: "blur(3px)",
+              },
+            }}
           >
             <Container className="py-8">
               <div className="flex justify-between items-center">
@@ -615,8 +616,9 @@ export default function Home() {
               sx={{
                 top: "auto",
                 bottom: 0,
-                // backgroundColor: "rgba(255,255,255,0.8)",
-                // backdropFilter: "blur(3px)",
+                backgroundColor: (theme) =>
+                  `${theme.palette.background.paper}D9`,
+                backdropFilter: "blur(3px)",
               }}
             >
               <Toolbar className="flex justify-center">
