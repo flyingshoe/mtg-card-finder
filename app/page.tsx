@@ -375,16 +375,18 @@ export default function Home() {
   }, [darkMode]);
 
   const theme = createTheme({
-    palette: { mode: darkMode ? "dark" : "light" },
+    palette: {
+      mode: darkMode ? "dark" : "light",
+    },
   });
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{ backgroundColor: "action.hover" }}>
         <main>
           {loading ? (
-            <Container className="mt-8">
+            <Container className="w-full h-svh pt-8">
               <Skeleton width="100%" />
               <Skeleton width="90%" />
               <Skeleton width="80%" />
@@ -406,7 +408,7 @@ export default function Home() {
               />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-4">
               {cardList.map((card: ScryfallCard) => (
                 <MtgCard
                   key={card.id}
@@ -435,11 +437,14 @@ export default function Home() {
           >
             <Container className="py-8">
               <div className="flex justify-between items-center">
-                <Typography variant="h4" gutterBottom color="info">
+                <Typography variant="h4" gutterBottom color="primary.main">
                   MTG Commander Card Finder
                 </Typography>
+
                 <FormControlLabel
-                  label={`Dark mode ${darkMode ? "ON" : "OFF"}`}
+                  label={
+                    <Typography>Dark mode {darkMode ? "ON" : "OFF"}</Typography>
+                  }
                   control={
                     <DarkModeSwitch
                       checked={darkMode}
