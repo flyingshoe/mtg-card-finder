@@ -26,7 +26,8 @@ interface SavedQueryProps {
   type: string;
   text: string;
   colors: string;
-  colorless: string;
+  colorless: boolean;
+  showLands: boolean;
 }
 
 type ImageUris = {
@@ -183,7 +184,8 @@ export default function Home() {
     type: "",
     text: "",
     colors: "",
-    colorless: "",
+    colorless: true,
+    showLands: true,
   };
   const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(defaultState);
   const [showPaginationBar, setShowPaginationBar] = useState(false);
@@ -195,7 +197,7 @@ export default function Home() {
     setShowDrawer((open) => !open);
   };
 
-  function generateColorQuery(colors: string, colorless: string) {
+  function generateColorQuery(colors: string, colorless: boolean) {
     if (colors && colorless) {
       return `(id<=${colors} or id:colorless)`;
     }
@@ -209,7 +211,7 @@ export default function Home() {
   }
 
   async function fetchCard(
-    { name, colors, type, text, colorless }: SavedQueryProps,
+    { name, colors, type, text, colorless, showLands }: SavedQueryProps,
     pageNumber: string
   ) {
     setShowDrawer(false);
@@ -228,7 +230,8 @@ export default function Home() {
           .split(" ")
           .map((q) => `o:${q}`)
           .join(" ")})`,
-      `f:commander (game:paper)`,
+      !showLands && "-t:land",
+      "f:commander (game:paper)",
     ];
 
     const searchParams = new URLSearchParams({
@@ -267,14 +270,17 @@ export default function Home() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
+    console.log("formData", formData);
+    console.log("savedQuery.showLands", savedQuery.showLands);
     const data: SavedQueryProps = {
       name: formData.get("name") as string,
       type: formData.get("type") as string,
       text: formData.get("text") as string,
       colors: savedQuery.colors,
-      colorless: formData.get("colorless") as string,
+      colorless: savedQuery.colorless,
+      showLands: savedQuery.showLands,
     };
-
+    console.log("data", data);
     setSavedQuery(data);
     setPageNumber("1"); // reset page number to 1
     fetchCard(data, "1");
@@ -418,11 +424,18 @@ export default function Home() {
                   control={
                     <Checkbox
                       size="large"
-                      defaultChecked={savedQuery.colorless != null}
+                      checked={savedQuery.colorless}
+                      name="colorless"
+                      onChange={(e) => {
+                        setSavedQuery((prevState) => {
+                          return {
+                            ...prevState,
+                            colorless: e.target.checked,
+                          };
+                        });
+                      }}
                     />
                   }
-                  name="colorless"
-                  value="colorless"
                   label={
                     <Image
                       src="/images/colorless_mana.svg"
@@ -433,6 +446,33 @@ export default function Home() {
                   }
                 />
               </FormGroup>
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="large"
+                    checked={savedQuery.showLands}
+                    name="showLands"
+                    onChange={(e) => {
+                      setSavedQuery((prevState) => {
+                        return {
+                          ...prevState,
+                          showLands: e.target.checked,
+                        };
+                      });
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    variant="h5"
+                    color={savedQuery.showLands ? "primary" : ""}
+                    sx={{ userSelect: "none" }}
+                  >
+                    Show Lands
+                  </Typography>
+                }
+              />
 
               <div className="flex flex-row justify-end space-x-2 mt-4">
                 <Button
@@ -460,6 +500,7 @@ export default function Home() {
             </form>
           </Container>
         </Drawer>
+
         <Fab
           aria-label="search"
           sx={{
@@ -481,6 +522,7 @@ export default function Home() {
           />
         </Fab>
       </main>
+
       <footer>
         {showPaginationBar && (
           <AppBar
