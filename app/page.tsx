@@ -429,28 +429,28 @@ export default function Home() {
                 />
               </FormGroup>
 
-              <div className="flex flex-row justify-end space-x-4 mt-4">
-                <div>
-                  <Button
-                    startIcon={<Refresh />}
-                    onClick={() => {
-                      setSavedQuery({} as SavedQueryProps);
+              <div className="flex flex-row justify-end space-x-2 mt-4">
+                <Button
+                  color="primary"
+                  variant='outlined'
+                  startIcon={<Refresh />}
+                  onClick={() => {
+                    setSavedQuery({} as SavedQueryProps);
+                    toggleDrawer();
+                    setTimeout(() => {
                       toggleDrawer();
-                      setTimeout(() => {
-                        toggleDrawer();
-                      }, 300);
-                    }}
-                  >
-                    Reset
-                  </Button>
-                  <Button
-                    startIcon={<Search />}
-                    variant="contained"
-                    type="submit"
-                  >
-                    Search
-                  </Button>
-                </div>
+                    }, 300);
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  startIcon={<Search />}
+                  variant="contained"
+                  type="submit"
+                >
+                  Search
+                </Button>
               </div>
             </form>
           </Container>
