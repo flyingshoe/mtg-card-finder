@@ -367,7 +367,10 @@ export default function Home() {
   };
 
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("darkMode") === "true";
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("darkMode") === "true";
+    }
+    return false; // Default value if localStorage is not available
   });
 
   useEffect(() => {
