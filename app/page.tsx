@@ -178,9 +178,14 @@ type ScryfallCard = {
 export default function Home() {
   const [showDrawer, setShowDrawer] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(
-    {} as SavedQueryProps
-  );
+  const defaultState: SavedQueryProps = {
+    name: "",
+    type: "",
+    text: "",
+    colors: "",
+    colorless: "",
+  };
+  const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(defaultState);
   const [showPaginationBar, setShowPaginationBar] = useState(false);
   const pageSize = 175;
   const [pageNumber, setPageNumber] = useState("1");
@@ -432,10 +437,10 @@ export default function Home() {
               <div className="flex flex-row justify-end space-x-2 mt-4">
                 <Button
                   color="primary"
-                  variant='outlined'
+                  variant="outlined"
                   startIcon={<Refresh />}
                   onClick={() => {
-                    setSavedQuery({} as SavedQueryProps);
+                    setSavedQuery(defaultState);
                     toggleDrawer();
                     setTimeout(() => {
                       toggleDrawer();
