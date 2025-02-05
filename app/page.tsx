@@ -366,12 +366,17 @@ export default function Home() {
     });
   };
 
-  const [darkMode, setDarkMode] = useState(
-    () => localStorage.getItem("darkMode") === "true"
-  );
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("darkMode") === "true";
+    }
+    return false; // Default value if localStorage is not available
+  });
 
   useEffect(() => {
-    localStorage.setItem("darkMode", darkMode.toString());
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", darkMode.toString());
+    }
   }, [darkMode]);
 
   const theme = createTheme({
