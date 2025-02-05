@@ -444,19 +444,15 @@ export default function Home() {
             <Container className="py-8">
               <div className="flex justify-between items-center">
                 <Typography variant="h4" gutterBottom color="primary.main">
-                  MTG Commander Card Finder
+                  <span className="hidden sm:block">
+                    MTG Commander Card Finder
+                  </span>
+                  <span className="block sm:hidden">MTG Card Finder</span>
                 </Typography>
 
-                <FormControlLabel
-                  label={
-                    <Typography>Dark mode {darkMode ? "ON" : "OFF"}</Typography>
-                  }
-                  control={
-                    <DarkModeSwitch
-                      checked={darkMode}
-                      onChange={(e) => setDarkMode(e.target.checked)}
-                    />
-                  }
+                <DarkModeSwitch
+                  checked={darkMode}
+                  onChange={(e) => setDarkMode(e.target.checked)}
                 />
               </div>
               <form onSubmit={handleSubmit}>
