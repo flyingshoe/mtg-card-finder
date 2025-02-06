@@ -465,6 +465,7 @@ export default function Home() {
                       marginBottom: 2,
                     }}
                     defaultValue={savedQuery.name}
+                    onFocus={(event) => event.target.select()}
                   />
                   <TextField
                     label="Card Type"
@@ -474,6 +475,7 @@ export default function Home() {
                       marginBottom: 2,
                     }}
                     defaultValue={savedQuery.type}
+                    onFocus={(event) => event.target.select()}
                   />
                   <TextField
                     label="Card Text"
@@ -483,6 +485,7 @@ export default function Home() {
                       marginBottom: 2,
                     }}
                     defaultValue={savedQuery.text}
+                    onFocus={(event) => event.target.select()}
                   />
                 </div>
                 <FormGroup row>
