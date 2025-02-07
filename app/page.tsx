@@ -388,7 +388,7 @@ export default function Home() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="xl" sx={{ backgroundColor: "action.hover" }}>
+      <Container maxWidth={false} sx={{ backgroundColor: "action.hover" }}>
         <main>
           {loading ? (
             <Container className="w-full h-svh pt-8">
@@ -422,7 +422,8 @@ export default function Home() {
                       card?.card_faces?.[0]?.image_uris?.normal) ??
                     "images/mtg-card-back.jpeg"
                   }
-                  linkUrl={card?.scryfall_uri}
+                  scryfallUrl={card?.scryfall_uri}
+                  cardName={card.name}
                 />
               ))}
               {/* Spacer */}
