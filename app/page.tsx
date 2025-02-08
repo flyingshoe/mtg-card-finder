@@ -25,14 +25,16 @@ import { Refresh, Search } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface SavedQueryProps {
+  [key: string]: string; // Or `any` if values can have different types
   name: string;
   type: string;
   text: string;
   colors: string;
-  colorless: boolean;
-  showLands: boolean;
+  colorless: string;
+  showLands: string;
 }
 
 type ImageUris = {
@@ -245,8 +247,8 @@ export default function Home() {
     type: "",
     text: "",
     colors: "",
-    colorless: true,
-    showLands: true,
+    colorless: "true",
+    showLands: "true",
   };
   const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(defaultState);
   const [showPaginationBar, setShowPaginationBar] = useState(false);
@@ -258,14 +260,14 @@ export default function Home() {
     setShowDrawer((open) => !open);
   };
 
-  function generateColorQuery(colors: string, colorless: boolean) {
-    if (colors && colorless) {
+  function generateColorQuery(colors: string, colorless: string) {
+    if (colors && colorless == "true") {
       return `(id<=${colors} or id:colorless)`;
     }
     if (colors) {
       return `id<=${colors} -id:colorless`;
     }
-    if (colorless) {
+    if (colorless == "true") {
       return "id:colorless";
     }
     return "";
@@ -291,7 +293,7 @@ export default function Home() {
           .split(" ")
           .map((q) => `o:${q}`)
           .join(" ")})`,
-      !showLands && "-t:land",
+      showLands != "true" && "-t:land",
       "f:commander (game:paper)",
     ];
 
@@ -343,6 +345,7 @@ export default function Home() {
     setSavedQuery(data);
     setPageNumber("1"); // reset page number to 1
     fetchCard(data, "1");
+    setParams(data);
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -382,6 +385,40 @@ export default function Home() {
       mode: darkMode ? "dark" : "light",
     },
   });
+
+  // Search parameters
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    getParams();
+  }, []);
+
+  const getParams = () => {
+    const queryObject: SavedQueryProps = {} as SavedQueryProps;
+    for (const [key, value] of searchParams.entries()) {
+      queryObject[key] = value;
+    }
+    setSavedQuery(queryObject);
+  };
+
+  const setParams = (latestSavedQuery: SavedQueryProps) => {
+    const params = new URLSearchParams();
+    Object.entries(latestSavedQuery).forEach(([key, value]) => {
+      if (value.toString().trim() !== "") {
+        params.set(key, value.toString());
+      }
+    });
+    router.push(`?${params.toString()}`);
+  };
+
+  const resetParams = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set("query", "nextjs");
+    params.set("page", "2");
+
+    router.push("/");
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -517,13 +554,13 @@ export default function Home() {
                     control={
                       <Checkbox
                         size="large"
-                        checked={savedQuery.colorless}
+                        checked={savedQuery.colorless == "true"}
                         name="colorless"
                         onChange={(e) => {
                           setSavedQuery((prevState) => {
                             return {
                               ...prevState,
-                              colorless: e.target.checked,
+                              colorless: e.target.checked.toString(),
                             };
                           });
                         }}
@@ -543,13 +580,13 @@ export default function Home() {
                   control={
                     <Checkbox
                       size="large"
-                      checked={savedQuery.showLands}
+                      checked={savedQuery.showLands == "true"}
                       name="showLands"
                       onChange={(e) => {
                         setSavedQuery((prevState) => {
                           return {
                             ...prevState,
-                            showLands: e.target.checked,
+                            showLands: e.target.checked.toString(),
                           };
                         });
                       }}
@@ -576,6 +613,7 @@ export default function Home() {
                       setTimeout(() => {
                         toggleDrawer();
                       }, 300);
+                      resetParams();
                     }}
                   >
                     Reset
