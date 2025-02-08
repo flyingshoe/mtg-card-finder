@@ -36,7 +36,7 @@ export default function MtgCard({
   const [showOverlay, setShowOverlay] = useState(false);
   const CardOverlay = () => {
     return (
-      <div className="absolute inset-0  cursor-pointer  bg-black bg-opacity-70  flex flex-col items-center justify-center gap-6">
+      <div className="absolute inset-0 cursor-pointer bg-black bg-opacity-70 flex flex-col items-center justify-center gap-6">
         <button
           className="absolute top-2 right-2 duration-300 hover:shadow-[0px_0px_15px_white] rounded-full"
           onClick={() => setShowOverlay(false)}
@@ -64,7 +64,7 @@ export default function MtgCard({
   return (
     <div className="relative">
       <img
-        className="rounded-2xl cursor-pointer hover:scale-110 duration-300"
+        className="rounded-2xl cursor-pointer sm:hover:scale-110 duration-300"
         src={imageSrc}
         onClick={() => {
           setShowOverlay(true);
