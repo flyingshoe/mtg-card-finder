@@ -331,8 +331,6 @@ export default function Home() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
-    console.log("formData", formData);
-    console.log("savedQuery.showLands", savedQuery.showLands);
     const data: SavedQueryProps = {
       name: formData.get("name") as string,
       type: formData.get("type") as string,
@@ -341,7 +339,7 @@ export default function Home() {
       colorless: savedQuery.colorless,
       showLands: savedQuery.showLands,
     };
-    console.log("data", data);
+
     setSavedQuery(data);
     setPageNumber("1"); // reset page number to 1
     fetchCard(data, "1");
