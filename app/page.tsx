@@ -367,13 +367,17 @@ export default function Home() {
     });
   };
 
-  const [darkMode, setDarkMode] = useState(() => {
+  const [darkMode, setDarkMode] = useState(false);
+  // Read from localstorage
+  useEffect(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("darkMode") === "true";
+      if (localStorage.getItem("darkMode") === "true") {
+        setDarkMode(true);
+      }
     }
-    return false; // Default value if localStorage is not available
-  });
+  }, []);
 
+  // Save to localstorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("darkMode", darkMode.toString());
