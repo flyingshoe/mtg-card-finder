@@ -240,7 +240,7 @@ const DarkModeSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function CardFinder() {
-  const [showDrawer, setShowDrawer] = useState(true);
+  const [drawerOpened, setDrawerOpened] = useState(true);
   const [loading, setLoading] = useState(false);
   const defaultState: SavedQueryProps = {
     name: "",
@@ -256,8 +256,12 @@ export default function CardFinder() {
   const [pageNumber, setPageNumber] = useState("1");
   const [totalPages, setTotalPages] = useState(1);
 
-  const toggleDrawer = () => {
-    setShowDrawer((open) => !open);
+  const showDrawer = () => {
+    setDrawerOpened(true);
+  };
+
+  const hideDrawer = () => {
+    setDrawerOpened(true);
   };
 
   function generateColorQuery(colors: string, colorless: string) {
@@ -277,7 +281,7 @@ export default function CardFinder() {
     { name, colors, type, text, colorless, showLands }: SavedQueryProps,
     pageNumber: string
   ) {
-    setShowDrawer(false);
+    hideDrawer();
     setLoading(true);
 
     const query = [
@@ -432,7 +436,7 @@ export default function CardFinder() {
         <main>
           {loading ? (
             <LoadingSkeleton />
-          ) : cardList.length == 0 && showDrawer == false ? (
+          ) : cardList.length == 0 && drawerOpened == false ? (
             <div className="flex justify-center items-center w-full h-dvh">
               <Image
                 src="/images/card_not_found.webp"
@@ -460,8 +464,8 @@ export default function CardFinder() {
             </div>
           )}
           <Drawer
-            open={showDrawer}
-            onClose={toggleDrawer}
+            open={drawerOpened}
+            onClose={hideDrawer}
             anchor="top"
             sx={{
               "& .MuiDrawer-paper": {
@@ -596,9 +600,9 @@ export default function CardFinder() {
                     startIcon={<Refresh />}
                     onClick={() => {
                       setSavedQuery(defaultState);
-                      toggleDrawer();
+                      showDrawer();
                       setTimeout(() => {
-                        toggleDrawer();
+                        hideDrawer();
                       }, 300);
                       resetParams();
                     }}
@@ -627,7 +631,7 @@ export default function CardFinder() {
                 backgroundColor: "rgb(170, 224, 250)",
               },
             }}
-            onClick={toggleDrawer}
+            onClick={showDrawer}
           >
             <Image
               src={`/images/blue_mana.svg`}
