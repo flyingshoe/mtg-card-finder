@@ -404,16 +404,16 @@ export default function CardFinder() {
     for (const [key, value] of searchParams.entries()) {
       queryObject[key] = value;
     }
-    setSavedQuery(queryObject);
+    setSavedQuery((q) => ({ ...q, ...queryObject }));
   };
 
   const setParams = (latestSavedQuery: SavedQueryProps) => {
     const params = new URLSearchParams();
-    Object.entries(latestSavedQuery).forEach(([key, value]) => {
-      if (value.toString().trim() !== "") {
-        params.set(key, value.toString());
+    for (const [key, value] of Object.entries(latestSavedQuery)) {
+      if (value?.trim() !== "") {
+        params.set(key, value);
       }
-    });
+    }
     router.push(`?${params.toString()}`);
   };
 
