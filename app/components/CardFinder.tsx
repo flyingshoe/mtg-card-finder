@@ -433,7 +433,7 @@ export default function CardFinder() {
           {loading ? (
             <LoadingSkeleton />
           ) : cardList.length == 0 && showDrawer == false ? (
-            <div className="flex justify-center items-center w-full h-svh">
+            <div className="flex justify-center items-center w-full h-dvh">
               <Image
                 src="/images/card_not_found.webp"
                 width={500}

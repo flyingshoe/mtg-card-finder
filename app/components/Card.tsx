@@ -62,15 +62,21 @@ export default function MtgCard({
   };
 
   return (
-    <div className="relative">
-      <img
-        className="rounded-2xl cursor-pointer sm:hover:scale-110 duration-300"
-        src={imageSrc}
-        onClick={() => {
-          setShowOverlay(true);
-        }}
-      />
-      {showOverlay && <CardOverlay />}
+    <div>
+      <div className="relative">
+        <img
+          className="rounded-2xl cursor-pointer sm:hover:scale-110 duration-300"
+          src={imageSrc}
+          onClick={() => {
+            setShowOverlay(true);
+          }}
+        />
+        {showOverlay && (
+          <div className="absolute inset-0 h-full">
+            <CardOverlay />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
