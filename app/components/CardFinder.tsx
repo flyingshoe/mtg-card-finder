@@ -12,21 +12,20 @@ import {
   FormControlLabel,
   FormGroup,
   Pagination,
-  Skeleton,
   styled,
   Switch,
-  TextField,
   ThemeProvider,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Refresh, Search } from "@mui/icons-material";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import MtgCard from "@/app/components/card";
 import LoadingSkeleton from "@/app/components/LoadingSkeleton";
+import MtgCard from "@/app/components/Card";
+import { MtgTextField } from "@/app/components/MtgTextField";
 
 interface SavedQueryProps {
   [key: string]: string; // Or `any` if values can have different types
@@ -438,7 +437,7 @@ export default function CardFinder() {
               />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-4">
+            <div className="min-h-svh grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-4">
               {cardList.map((card: ScryfallCard) => (
                 <MtgCard
                   key={card.id}
@@ -482,35 +481,29 @@ export default function CardFinder() {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="flex flex-wrap md:space-x-8">
-                  <TextField
+                  <MtgTextField
                     label="Card Name"
                     name="name"
-                    className="w-full sm:w-full md:w-auto"
-                    sx={{
-                      marginBottom: 2,
+                    value={savedQuery.name}
+                    onChange={(e) => {
+                      setSavedQuery((q) => ({ ...q, name: e.target.value }));
                     }}
-                    defaultValue={savedQuery.name}
-                    onFocus={(event) => event.target.select()}
                   />
-                  <TextField
+                  <MtgTextField
                     label="Card Type"
                     name="type"
-                    className="w-full sm:w-full md:w-auto"
-                    sx={{
-                      marginBottom: 2,
+                    value={savedQuery.type}
+                    onChange={(e) => {
+                      setSavedQuery((q) => ({ ...q, type: e.target.value }));
                     }}
-                    defaultValue={savedQuery.type}
-                    onFocus={(event) => event.target.select()}
                   />
-                  <TextField
+                  <MtgTextField
                     label="Card Text"
                     name="text"
-                    className="w-full sm:w-full md:w-auto"
-                    sx={{
-                      marginBottom: 2,
+                    value={savedQuery.text}
+                    onChange={(e) => {
+                      setSavedQuery((q) => ({ ...q, text: e.target.value }));
                     }}
-                    defaultValue={savedQuery.text}
-                    onFocus={(event) => event.target.select()}
                   />
                 </div>
                 <FormGroup row>

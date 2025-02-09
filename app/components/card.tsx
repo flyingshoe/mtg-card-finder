@@ -1,5 +1,5 @@
-import { Cancel, Close } from "@mui/icons-material";
-import React, { useState } from "react";
+import { Cancel } from "@mui/icons-material";
+import React, { FC, useState } from "react";
 
 export interface CardProps {
   id?: string;
@@ -10,7 +10,7 @@ export interface CardProps {
   cardName: string;
 }
 
-const CardOverlayIcon: React.FC<{ image?: string; url: string }> = ({
+const CardOverlayIcon: FC<{ image?: string; url: string }> = ({
   image,
   url,
 }) => {
