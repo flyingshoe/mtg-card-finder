@@ -247,7 +247,7 @@ export default function CardFinder() {
     type: "",
     text: "",
     colors: "",
-    colorless: "true",
+    colorless: "false",
     showLands: "true",
   };
   const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(defaultState);
@@ -261,7 +261,7 @@ export default function CardFinder() {
   };
 
   const hideDrawer = () => {
-    setDrawerOpened(true);
+    setDrawerOpened(false);
   };
 
   function generateColorQuery(colors: string, colorless: string) {
@@ -600,9 +600,9 @@ export default function CardFinder() {
                     startIcon={<Refresh />}
                     onClick={() => {
                       setSavedQuery(defaultState);
-                      showDrawer();
+                      hideDrawer();
                       setTimeout(() => {
-                        hideDrawer();
+                        showDrawer();
                       }, 300);
                       resetParams();
                     }}
