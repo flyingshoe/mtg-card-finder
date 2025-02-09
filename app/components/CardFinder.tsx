@@ -403,12 +403,10 @@ export default function CardFinder() {
     for (const [key, value] of searchParams.entries()) {
       queryObject[key] = value;
     }
-    setSavedQuery((q) => {
-      if (Object.keys(queryObject).length > 0) {
-        fetchCard({ ...q, ...queryObject }, "1");
-      }
-      return { ...q, ...queryObject };
-    });
+    setSavedQuery({ ...savedQuery, ...queryObject });
+    if (Object.keys(queryObject).length > 0) {
+      fetchCard({ ...savedQuery, ...queryObject }, "1");
+    }
   };
 
   const setParams = (latestSavedQuery: SavedQueryProps) => {
