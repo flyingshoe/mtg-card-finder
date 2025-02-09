@@ -406,7 +406,6 @@ export default function CardFinder() {
     setSavedQuery((q) => {
       if (Object.keys(queryObject).length > 0) {
         fetchCard({ ...q, ...queryObject }, "1");
-        setShowDrawer(false);
       }
       return { ...q, ...queryObject };
     });
