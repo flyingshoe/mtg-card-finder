@@ -405,7 +405,9 @@ export default function CardFinder() {
     }
     setSavedQuery({ ...savedQuery, ...queryObject });
     if (Object.keys(queryObject).length > 0) {
-      fetchCard({ ...savedQuery, ...queryObject }, "1");
+      setTimeout(() => {
+        fetchCard({ ...savedQuery, ...queryObject }, "1");
+      }, 100);
     }
   };
 
