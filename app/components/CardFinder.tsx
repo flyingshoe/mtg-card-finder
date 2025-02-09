@@ -26,6 +26,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import MtgCard from "@/app/components/card";
+import LoadingSkeleton from "@/app/components/LoadingSkeleton";
 
 interface SavedQueryProps {
   [key: string]: string; // Or `any` if values can have different types
@@ -420,271 +421,252 @@ export default function CardFinder() {
     router.push("/");
   };
 
-  const LoadingSkeleton = () => {
-    return (
-      <Container className="w-full h-svh pt-8">
-        <Skeleton width="100%" />
-        <Skeleton width="90%" />
-        <Skeleton width="80%" />
-        <Skeleton width="90%" />
-        <Skeleton width="70%" />
-        <Skeleton width="60%" />
-        <Skeleton width="80%" />
-        <Skeleton width="90%" />
-        <Skeleton width="70%" />
-        <Skeleton width="60%" />
-      </Container>
-    );
-  };
-
   return (
-    <Suspense fallback={<LoadingSkeleton />}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Container maxWidth={false} sx={{ backgroundColor: "action.hover" }}>
-          <main>
-            {loading ? (
-              <LoadingSkeleton />
-            ) : cardList.length == 0 && showDrawer == false ? (
-              <div className="flex justify-center items-center w-full h-svh">
-                <Image
-                  src="/images/card_not_found.webp"
-                  width={500}
-                  height={500}
-                  alt="card_not_found_image"
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Container maxWidth={false} sx={{ backgroundColor: "action.hover" }}>
+        <main>
+          {loading ? (
+            <LoadingSkeleton />
+          ) : cardList.length == 0 && showDrawer == false ? (
+            <div className="flex justify-center items-center w-full h-svh">
+              <Image
+                src="/images/card_not_found.webp"
+                width={500}
+                height={500}
+                alt="card_not_found_image"
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-4">
+              {cardList.map((card: ScryfallCard) => (
+                <MtgCard
+                  key={card.id}
+                  imageSrc={
+                    (card.image_uris?.normal ||
+                      card?.card_faces?.[0]?.image_uris?.normal) ??
+                    "images/mtg-card-back.jpeg"
+                  }
+                  scryfallUrl={card?.scryfall_uri}
+                  cardName={card.name}
+                />
+              ))}
+              {/* Spacer */}
+              <div className="h-28 w-full"></div>
+            </div>
+          )}
+          <Drawer
+            open={showDrawer}
+            onClose={toggleDrawer}
+            anchor="top"
+            sx={{
+              "& .MuiDrawer-paper": {
+                backgroundColor: (theme) =>
+                  `${theme.palette.background.paper}E6`,
+                backdropFilter: "blur(3px)",
+              },
+            }}
+          >
+            <Container className="py-8">
+              <div className="flex justify-between items-center">
+                <Typography variant="h4" gutterBottom color="primary.main">
+                  <span className="hidden sm:block">
+                    MTG Commander Card Finder
+                  </span>
+                  <span className="block sm:hidden">MTG Card Finder</span>
+                </Typography>
+                <DarkModeSwitch
+                  checked={darkMode}
+                  onChange={(e) => setDarkMode(e.target.checked)}
                 />
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-4">
-                {cardList.map((card: ScryfallCard) => (
-                  <MtgCard
-                    key={card.id}
-                    imageSrc={
-                      (card.image_uris?.normal ||
-                        card?.card_faces?.[0]?.image_uris?.normal) ??
-                      "images/mtg-card-back.jpeg"
-                    }
-                    scryfallUrl={card?.scryfall_uri}
-                    cardName={card.name}
+              <form onSubmit={handleSubmit}>
+                <div className="flex flex-wrap md:space-x-8">
+                  <TextField
+                    label="Card Name"
+                    name="name"
+                    className="w-full sm:w-full md:w-auto"
+                    sx={{
+                      marginBottom: 2,
+                    }}
+                    defaultValue={savedQuery.name}
+                    onFocus={(event) => event.target.select()}
                   />
-                ))}
-                {/* Spacer */}
-                <div className="h-28 w-full"></div>
-              </div>
-            )}
-            <Drawer
-              open={showDrawer}
-              onClose={toggleDrawer}
-              anchor="top"
-              sx={{
-                "& .MuiDrawer-paper": {
-                  backgroundColor: (theme) =>
-                    `${theme.palette.background.paper}E6`,
-                  backdropFilter: "blur(3px)",
-                },
-              }}
-            >
-              <Container className="py-8">
-                <div className="flex justify-between items-center">
-                  <Typography variant="h4" gutterBottom color="primary.main">
-                    <span className="hidden sm:block">
-                      MTG Commander Card Finder
-                    </span>
-                    <span className="block sm:hidden">MTG Card Finder</span>
-                  </Typography>
-                  <DarkModeSwitch
-                    checked={darkMode}
-                    onChange={(e) => setDarkMode(e.target.checked)}
+                  <TextField
+                    label="Card Type"
+                    name="type"
+                    className="w-full sm:w-full md:w-auto"
+                    sx={{
+                      marginBottom: 2,
+                    }}
+                    defaultValue={savedQuery.type}
+                    onFocus={(event) => event.target.select()}
+                  />
+                  <TextField
+                    label="Card Text"
+                    name="text"
+                    className="w-full sm:w-full md:w-auto"
+                    sx={{
+                      marginBottom: 2,
+                    }}
+                    defaultValue={savedQuery.text}
+                    onFocus={(event) => event.target.select()}
                   />
                 </div>
-                <form onSubmit={handleSubmit}>
-                  <div className="flex flex-wrap md:space-x-8">
-                    <TextField
-                      label="Card Name"
-                      name="name"
-                      className="w-full sm:w-full md:w-auto"
-                      sx={{
-                        marginBottom: 2,
-                      }}
-                      defaultValue={savedQuery.name}
-                      onFocus={(event) => event.target.select()}
-                    />
-                    <TextField
-                      label="Card Type"
-                      name="type"
-                      className="w-full sm:w-full md:w-auto"
-                      sx={{
-                        marginBottom: 2,
-                      }}
-                      defaultValue={savedQuery.type}
-                      onFocus={(event) => event.target.select()}
-                    />
-                    <TextField
-                      label="Card Text"
-                      name="text"
-                      className="w-full sm:w-full md:w-auto"
-                      sx={{
-                        marginBottom: 2,
-                      }}
-                      defaultValue={savedQuery.text}
-                      onFocus={(event) => event.target.select()}
-                    />
-                  </div>
-                  <FormGroup row>
-                    {Object.keys(MtgColors).map((color) => (
-                      <FormControlLabel
-                        key={color}
-                        control={
-                          <Checkbox
-                            size="large"
-                            onChange={handleColorChange}
-                            checked={
-                              savedQuery.colors?.includes(
-                                MtgColors[color as keyof typeof MtgColors]
-                              ) ?? false
-                            }
-                          />
-                        }
-                        label={
-                          <Image
-                            src={`/images/${color.toLowerCase()}_mana.svg`}
-                            width={40}
-                            height={40}
-                            alt={`${color}_mana_icon`}
-                          />
-                        }
-                        value={MtgColors[color as keyof typeof MtgColors]}
-                      />
-                    ))}
+                <FormGroup row>
+                  {Object.keys(MtgColors).map((color) => (
                     <FormControlLabel
+                      key={color}
                       control={
                         <Checkbox
                           size="large"
-                          checked={savedQuery.colorless == "true"}
-                          name="colorless"
-                          onChange={(e) => {
-                            setSavedQuery((prevState) => {
-                              return {
-                                ...prevState,
-                                colorless: e.target.checked.toString(),
-                              };
-                            });
-                          }}
+                          onChange={handleColorChange}
+                          checked={
+                            savedQuery.colors?.includes(
+                              MtgColors[color as keyof typeof MtgColors]
+                            ) ?? false
+                          }
                         />
                       }
                       label={
                         <Image
-                          src="/images/colorless_mana.svg"
+                          src={`/images/${color.toLowerCase()}_mana.svg`}
                           width={40}
                           height={40}
-                          alt="colorless_mana_icon"
+                          alt={`${color}_mana_icon`}
                         />
                       }
+                      value={MtgColors[color as keyof typeof MtgColors]}
                     />
-                  </FormGroup>
+                  ))}
                   <FormControlLabel
                     control={
                       <Checkbox
                         size="large"
-                        checked={savedQuery.showLands == "true"}
-                        name="showLands"
+                        checked={savedQuery.colorless == "true"}
+                        name="colorless"
                         onChange={(e) => {
                           setSavedQuery((prevState) => {
                             return {
                               ...prevState,
-                              showLands: e.target.checked.toString(),
+                              colorless: e.target.checked.toString(),
                             };
                           });
                         }}
                       />
                     }
                     label={
-                      <Typography
-                        variant="h5"
-                        color={savedQuery.showLands ? "primary" : ""}
-                        sx={{ userSelect: "none" }}
-                      >
-                        Show Lands
-                      </Typography>
+                      <Image
+                        src="/images/colorless_mana.svg"
+                        width={40}
+                        height={40}
+                        alt="colorless_mana_icon"
+                      />
                     }
                   />
-                  <div className="flex flex-row justify-end space-x-2 mt-4">
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      startIcon={<Refresh />}
-                      onClick={() => {
-                        setSavedQuery(defaultState);
-                        toggleDrawer();
-                        setTimeout(() => {
-                          toggleDrawer();
-                        }, 300);
-                        resetParams();
+                </FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="large"
+                      checked={savedQuery.showLands == "true"}
+                      name="showLands"
+                      onChange={(e) => {
+                        setSavedQuery((prevState) => {
+                          return {
+                            ...prevState,
+                            showLands: e.target.checked.toString(),
+                          };
+                        });
                       }}
+                    />
+                  }
+                  label={
+                    <Typography
+                      variant="h5"
+                      color={savedQuery.showLands ? "primary" : ""}
+                      sx={{ userSelect: "none" }}
                     >
-                      Reset
-                    </Button>
-                    <Button
-                      startIcon={<Search />}
-                      variant="contained"
-                      type="submit"
-                    >
-                      Search
-                    </Button>
-                  </div>
-                </form>
-              </Container>
-            </Drawer>
-            <Fab
-              aria-label="search"
-              sx={{
-                position: "fixed",
-                bottom: showPaginationBar ? 72 : 16,
-                right: 16,
-                backgroundColor: "rgb(170, 224, 250)",
-                "&:hover": {
-                  backgroundColor: "rgb(170, 224, 250)",
-                },
-              }}
-              onClick={toggleDrawer}
-            >
-              <Image
-                src={`/images/blue_mana.svg`}
-                width={40}
-                height={40}
-                alt={`mtg_icon`}
-              />
-            </Fab>
-          </main>
-          <footer>
-            {showPaginationBar && (
-              <AppBar
-                position="fixed"
-                sx={{
-                  top: "auto",
-                  bottom: 0,
-                  backgroundColor: (theme) =>
-                    `${theme.palette.background.paper}D9`,
-                  backdropFilter: "blur(3px)",
-                }}
-              >
-                <Toolbar className="flex justify-center">
-                  <Pagination
+                      Show Lands
+                    </Typography>
+                  }
+                />
+                <div className="flex flex-row justify-end space-x-2 mt-4">
+                  <Button
                     color="primary"
-                    count={totalPages}
-                    page={parseInt(pageNumber)}
-                    onChange={(_, pageNo) => {
-                      const newPageNo = pageNo.toString();
-                      setPageNumber(newPageNo);
-                      fetchCard(savedQuery, newPageNo);
+                    variant="outlined"
+                    startIcon={<Refresh />}
+                    onClick={() => {
+                      setSavedQuery(defaultState);
+                      toggleDrawer();
+                      setTimeout(() => {
+                        toggleDrawer();
+                      }, 300);
+                      resetParams();
                     }}
-                  />
-                </Toolbar>
-              </AppBar>
-            )}
-          </footer>
-        </Container>
-      </ThemeProvider>
-    </Suspense>
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    startIcon={<Search />}
+                    variant="contained"
+                    type="submit"
+                  >
+                    Search
+                  </Button>
+                </div>
+              </form>
+            </Container>
+          </Drawer>
+          <Fab
+            aria-label="search"
+            sx={{
+              position: "fixed",
+              bottom: showPaginationBar ? 72 : 16,
+              right: 16,
+              backgroundColor: "rgb(170, 224, 250)",
+              "&:hover": {
+                backgroundColor: "rgb(170, 224, 250)",
+              },
+            }}
+            onClick={toggleDrawer}
+          >
+            <Image
+              src={`/images/blue_mana.svg`}
+              width={40}
+              height={40}
+              alt={`mtg_icon`}
+            />
+          </Fab>
+        </main>
+        <footer>
+          {showPaginationBar && (
+            <AppBar
+              position="fixed"
+              sx={{
+                top: "auto",
+                bottom: 0,
+                backgroundColor: (theme) =>
+                  `${theme.palette.background.paper}D9`,
+                backdropFilter: "blur(3px)",
+              }}
+            >
+              <Toolbar className="flex justify-center">
+                <Pagination
+                  color="primary"
+                  count={totalPages}
+                  page={parseInt(pageNumber)}
+                  onChange={(_, pageNo) => {
+                    const newPageNo = pageNo.toString();
+                    setPageNumber(newPageNo);
+                    fetchCard(savedQuery, newPageNo);
+                  }}
+                />
+              </Toolbar>
+            </AppBar>
+          )}
+        </footer>
+      </Container>
+    </ThemeProvider>
   );
 }
