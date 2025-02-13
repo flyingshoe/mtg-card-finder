@@ -446,7 +446,7 @@ export default function CardFinder() {
               />
             </div>
           ) : (
-            <div className="min-h-svh grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pt-4">
+            <div className="min-h-svh grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-6">
               {cardList.map((card: ScryfallCard) => (
                 <MtgCard
                   key={card.id}
@@ -460,7 +460,7 @@ export default function CardFinder() {
                 />
               ))}
               {/* Spacer */}
-              <div className="h-28 w-full"></div>
+              <div className="h-24 w-full"></div>
             </div>
           )}
           <Drawer
