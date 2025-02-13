@@ -66,6 +66,7 @@ export default function MtgCard({
     <div>
       <div className="relative">
         <Image
+          unoptimized
           className="rounded-2xl cursor-pointer sm:hover:scale-110 duration-300"
           alt="MTG Card Image"
           src={imageSrc}
