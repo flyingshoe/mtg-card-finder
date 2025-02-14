@@ -1,6 +1,4 @@
-import type { MetadataRoute } from "next";
-
-export default function manifest(): MetadataRoute.Manifest {
+export default function manifest() {
   return {
     name: "MTG Card Finder",
     short_name: "MTG Finder",
