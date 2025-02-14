@@ -2,6 +2,7 @@
 
 import {
   AppBar,
+  Avatar,
   Button,
   Checkbox,
   Container,
@@ -626,19 +627,14 @@ export default function CardFinder() {
               position: "fixed",
               bottom: showPaginationBar ? 72 : 16,
               right: 16,
-              backgroundColor: "rgb(170, 224, 250)",
-              "&:hover": {
-                backgroundColor: "rgb(170, 224, 250)",
-              },
+              backgroundColor: "white",
+              boxShadow: `0px 4px 12px ${
+                darkMode ? "rgba(255,255,255,0.5)" : "black"
+              }`,
             }}
             onClick={showDrawer}
           >
-            <Image
-              src={`/images/blue_mana.svg`}
-              width={40}
-              height={40}
-              alt={`mtg_icon`}
-            />
+            <Avatar alt="MTG logo" src="/images/mtg_logo.jpg" />
           </Fab>
         </main>
         <footer>
