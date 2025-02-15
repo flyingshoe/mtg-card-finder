@@ -80,6 +80,24 @@ const CameraOCR = () => {
     );
   };
 
+  const linkToGreyOgre = () => {
+    window.open(
+      `https://www.greyogregames.com/search?page=1&q=${encodeURIComponent(
+        text
+      )}`,
+      "_blank"
+    );
+  };
+
+  const linkToMTGasia = () => {
+    window.open(
+      `https://www.mtg-asia.com/search?type=product&options%5Bprefix%5D=last&q=${encodeURIComponent(
+        text
+      )}`,
+      "_blank"
+    );
+  };
+
   function isAlphabetic(text: string) {
     return /^[A-Za-z]+$/.test(text);
   }
@@ -122,12 +140,24 @@ const CameraOCR = () => {
           <Button variant="contained" onClick={captureImage} color="secondary">
             Capture & Scan
           </Button>
+        </Toolbar>
+        <Toolbar disableGutters className="flex justify-evenly">
           <Button
             variant="contained"
             onClick={linkToCardKingdom}
             color="warning"
           >
-            Go CK
+            Card Kingdom
+          </Button>
+          <Button
+            variant="contained"
+            onClick={linkToGreyOgre}
+            color="secondary"
+          >
+            Grey Ogre
+          </Button>
+          <Button variant="contained" onClick={linkToMTGasia} color="success">
+            MTG asia
           </Button>
         </Toolbar>
       </AppBar>
