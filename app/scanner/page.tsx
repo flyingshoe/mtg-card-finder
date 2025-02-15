@@ -72,10 +72,17 @@ const CameraOCR = () => {
     window.open(
       `https://www.cardkingdom.com/purchasing/mtg_singles?search=header&${encodeURIComponent(
         "filter[name]"
-      )}=${text.split(" ").join("+")}`,
+      )}=${text
+        .split(" ")
+        .filter((x) => isAlphabetic(x))
+        .join("+")}`,
       "_blank"
     );
   };
+
+  function isAlphabetic(text: string) {
+    return /^[A-Za-z]+$/.test(text);
+  }
 
   return (
     <>
