@@ -60,6 +60,14 @@ const CameraOCR = () => {
     })
       .then(({ data: { text } }) => {
         setText(text);
+
+        window.open(
+          `https://www.cardkingdom.com/purchasing/mtg_singles?search=header&${encodeURIComponent(
+            `filter[name]=${text.split(" ").join("+")}`
+          )}`,
+          "_blank"
+        );
+
         setLoading(false);
       })
       .catch((err) => {
