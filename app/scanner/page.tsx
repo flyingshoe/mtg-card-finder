@@ -1,5 +1,6 @@
 "use client";
 
+import { AppBar, Button, Menu, Toolbar } from "@mui/material";
 import React, { useRef, useState } from "react";
 import Tesseract from "tesseract.js";
 
@@ -68,23 +69,8 @@ const CameraOCR = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex gap-2">
-        <button
-          onClick={startCamera}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Start Camera
-        </button>
-        <button
-          onClick={stopCamera}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Stop Camera
-        </button>
-      </div>
-
-      <div className="mt-4">
+    <>
+      <div className="flex justify-center items-center">
         <video
           ref={videoRef}
           autoPlay
@@ -92,22 +78,37 @@ const CameraOCR = () => {
           className="w-full max-w-md"
         />
       </div>
-
       <canvas ref={canvasRef} width={640} height={480} className="hidden" />
 
-      <button
-        onClick={captureImage}
-        className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
-      >
-        Capture & Scan
-      </button>
+      <div className="flex justify-center items-start">
+        {loading ? (
+          <p className="mt-2">Processing...</p>
+        ) : (
+          <p className="mt-2">{text}</p>
+        )}
+      </div>
 
-      {loading ? (
-        <p className="mt-2">Processing...</p>
-      ) : (
-        <p className="mt-2">{text}</p>
-      )}
-    </div>
+      <AppBar
+        position="fixed"
+        sx={{
+          top: "auto",
+          bottom: 0,
+        }}
+      >
+        <Toolbar disableGutters className="flex justify-evenly">
+          <Button variant="contained" onClick={startCamera} color="success">
+            Start Camera
+          </Button>
+
+          <Button variant="contained" onClick={stopCamera} color="error">
+            Stop Camera
+          </Button>
+          <Button variant="contained" onClick={captureImage} color="secondary">
+            Capture & Scan
+          </Button>
+        </Toolbar>
+      </AppBar>
+    </>
   );
 };
 
