@@ -71,8 +71,8 @@ const CameraOCR = () => {
   const linkToCardKingdom = () => {
     window.open(
       `https://www.cardkingdom.com/purchasing/mtg_singles?search=header&${encodeURIComponent(
-        `filter[name]=${text.split(" ").join("+")}`
-      )}`,
+        "filter[name]"
+      )}=${text.split(" ").join("+")}`,
       "_blank"
     );
   };
@@ -115,7 +115,11 @@ const CameraOCR = () => {
           <Button variant="contained" onClick={captureImage} color="secondary">
             Capture & Scan
           </Button>
-          <Button variant="contained" onClick={linkToCardKingdom} color="warning">
+          <Button
+            variant="contained"
+            onClick={linkToCardKingdom}
+            color="warning"
+          >
             Go CK
           </Button>
         </Toolbar>
