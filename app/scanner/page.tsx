@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Tesseract from "tesseract.js";
 
 const CameraOCR = () => {
@@ -8,10 +8,7 @@ const CameraOCR = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(typeof window !== "undefined" && !!navigator.mediaDevices);
-  }, []);
+
   // Start Camera
   const startCamera = async () => {
     try {
@@ -72,7 +69,6 @@ const CameraOCR = () => {
 
   return (
     <div className="p-4">
-      {isClient ? "ISCLIENT" : "NOTCLIENT"}
       <div className="flex gap-2">
         <button
           onClick={startCamera}
