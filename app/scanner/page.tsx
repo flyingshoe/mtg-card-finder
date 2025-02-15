@@ -138,7 +138,7 @@ const CameraOCR = () => {
             Stop Camera
           </Button>
           <Button variant="contained" onClick={captureImage} color="secondary">
-            Capture & Scan
+            Try your luck
           </Button>
         </Toolbar>
         <Toolbar disableGutters className="flex justify-evenly">
