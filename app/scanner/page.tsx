@@ -15,7 +15,9 @@ const CameraOCR = () => {
   // Start Camera
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } },
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
