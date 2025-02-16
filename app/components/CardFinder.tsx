@@ -447,22 +447,24 @@ export default function CardFinder() {
               />
             </div>
           ) : (
-            <div className="min-h-svh grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-6">
-              {cardList.map((card: ScryfallCard) => (
-                <MtgCard
-                  key={card.id}
-                  imageSrc={
-                    (card.image_uris?.normal ||
-                      card?.card_faces?.[0]?.image_uris?.normal) ??
-                    "images/mtg-card-back.jpeg"
-                  }
-                  scryfallUrl={card?.scryfall_uri}
-                  cardName={card.name}
-                />
-              ))}
+            <>
+              <div className="min-h-svh grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-6">
+                {cardList.map((card: ScryfallCard) => (
+                  <MtgCard
+                    key={card.id}
+                    imageSrc={
+                      (card.image_uris?.normal ||
+                        card?.card_faces?.[0]?.image_uris?.normal) ??
+                      "images/mtg-card-back.jpeg"
+                    }
+                    scryfallUrl={card?.scryfall_uri}
+                    cardName={card.name}
+                  />
+                ))}
+              </div>
               {/* Spacer */}
               <div className="h-24 w-full"></div>
-            </div>
+            </>
           )}
           <Drawer
             open={drawerOpened}
