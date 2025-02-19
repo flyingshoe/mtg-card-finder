@@ -320,6 +320,7 @@ export default function CardFinder() {
       })
       .catch(() => {
         setCardList([]);
+        setShowPaginationBar(false);
       })
       .finally(() => {
         setLoading(false);
