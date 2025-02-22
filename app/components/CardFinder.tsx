@@ -630,9 +630,9 @@ export default function CardFinder() {
               position: "fixed",
               bottom: showPaginationBar ? 72 : 16,
               right: 16,
-              backgroundColor: darkMode ? "white" : "black",
+              backgroundColor: "black",
               "&:hover": {
-                backgroundColor: darkMode ? "white" : "black",
+                backgroundColor: "black",
                 boxShadow: `0px 4px 12px ${
                   darkMode ? "rgba(255,255,255,0.5)" : "black"
                 }`,
@@ -640,12 +640,7 @@ export default function CardFinder() {
             }}
             onClick={showDrawer}
           >
-            <Avatar
-              alt="MTG logo"
-              src={
-                darkMode ? "/images/mtg_logo.jpg" : "/images/mtg_logo_dark.jpg"
-              }
-            />
+            <Avatar alt="MTG logo" src={"/images/mtg_logo_dark.jpg"} />
           </Fab>
         </main>
         <footer>
