@@ -42,7 +42,7 @@ export default function MtgCard({
           className="absolute top-2 right-2 duration-300 hover:shadow-[0px_0px_15px_white] rounded-full"
           onClick={() => setShowOverlay(false)}
         >
-          <Cancel />
+          <Cancel sx={{ color: "white" }} />
         </button>
 
         <CardOverlayIcon url={scryfallUrl} />
