@@ -402,7 +402,9 @@ export default function CardFinder() {
 
   useEffect(() => {
     getParams();
-  }, []);
+
+    console.log("searchParams", searchParams);
+  }, [searchParams]);
 
   const getParams = () => {
     const queryObject: SavedQueryProps = {} as SavedQueryProps;
