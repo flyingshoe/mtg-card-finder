@@ -409,10 +409,10 @@ export default function CardFinder() {
     for (const [key, value] of searchParams.entries()) {
       queryObject[key] = value;
     }
-    setSavedQuery(queryObject);
+    setSavedQuery({ ...defaultState, ...queryObject });
     if (Object.keys(queryObject).length > 0) {
       setTimeout(() => {
-        fetchCard(queryObject, "1");
+        fetchCard({ ...defaultState, ...queryObject }, "1");
       }, 100);
     }
   };
