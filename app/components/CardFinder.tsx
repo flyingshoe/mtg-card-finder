@@ -402,8 +402,6 @@ export default function CardFinder() {
 
   useEffect(() => {
     getParams();
-
-    console.log("searchParams", searchParams);
   }, [searchParams]);
 
   const getParams = () => {
@@ -411,10 +409,10 @@ export default function CardFinder() {
     for (const [key, value] of searchParams.entries()) {
       queryObject[key] = value;
     }
-    setSavedQuery({ ...savedQuery, ...queryObject });
+    setSavedQuery(queryObject);
     if (Object.keys(queryObject).length > 0) {
       setTimeout(() => {
-        fetchCard({ ...savedQuery, ...queryObject }, "1");
+        fetchCard(queryObject, "1");
       }, 100);
     }
   };
