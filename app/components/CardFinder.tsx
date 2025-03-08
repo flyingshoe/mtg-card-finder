@@ -285,17 +285,24 @@ export default function CardFinder() {
     hideDrawer();
     setLoading(true);
 
+    // Extracts all regex then splits the remaining string into words, returns an array of strings
+    const parseString = (input: string) => [
+      ...(input.match(/\/[^/]+\/+/g) || []),
+      ...input
+        .replace(/\/[^/]+\/+/g, "")
+        .trim()
+        .split(/\s+/),
+    ];
+
     const query = [
       name,
       generateColorQuery(colors, colorless),
       type &&
-        `(${type
-          .split(" ")
+        `(${parseString(type)
           .map((q) => `t:${q}`)
           .join(" ")})`,
       text &&
-        `(${text
-          .split(" ")
+        `(${parseString(text)
           .map((q) => `o:${q}`)
           .join(" ")})`,
       showLands != "true" && "-t:land",
