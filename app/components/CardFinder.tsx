@@ -286,13 +286,16 @@ export default function CardFinder() {
     setLoading(true);
 
     // Extracts all regex then splits the remaining string into words, returns an array of strings
-    const parseString = (input: string) => [
-      ...(input.match(/\/[^/]+\/+/g) || []),
-      ...input
-        .replace(/\/[^/]+\/+/g, "")
-        .trim()
-        .split(/\s+/),
-    ];
+    const parseString = (input: string) => {
+      return [
+        ...(input.match(/\/[^/]+\/+/g) || []), // this line is to add in all regex
+        ...input
+          .replace(/\/[^/]+\/+/g, "")
+          .trim() // remove those added regex
+          .split(/\s+/)
+          .filter(Boolean),
+      ];
+    };
 
     const query = [
       name,
