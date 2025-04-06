@@ -36,6 +36,7 @@ interface SavedQueryProps {
   colors: string;
   colorless: string;
   showLands: string;
+  commander: string;
 }
 
 type ImageUris = {
@@ -250,6 +251,7 @@ export default function CardFinder() {
     colors: "",
     colorless: "false",
     showLands: "true",
+    commander: "true",
   };
   const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(defaultState);
   const [showPaginationBar, setShowPaginationBar] = useState(false);
@@ -279,7 +281,15 @@ export default function CardFinder() {
   }
 
   async function fetchCard(
-    { name, colors, type, text, colorless, showLands }: SavedQueryProps,
+    {
+      name,
+      colors,
+      type,
+      text,
+      colorless,
+      showLands,
+      commander,
+    }: SavedQueryProps,
     pageNumber: string
   ) {
     hideDrawer();
@@ -309,7 +319,8 @@ export default function CardFinder() {
           .map((q) => `o:${q}`)
           .join(" ")})`,
       showLands != "true" && "-t:land",
-      "f:commander (game:paper)",
+      commander == "true" && "f:commander",
+      "(game:paper)",
     ];
 
     const searchParams = new URLSearchParams({
@@ -356,6 +367,7 @@ export default function CardFinder() {
       colors: savedQuery.colors,
       colorless: savedQuery.colorless,
       showLands: savedQuery.showLands,
+      commander: savedQuery.commander,
     };
 
     setSavedQuery(data);
@@ -618,6 +630,33 @@ export default function CardFinder() {
                       sx={{ userSelect: "none" }}
                     >
                       Show Lands
+                    </Typography>
+                  }
+                />
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="large"
+                      checked={savedQuery.commander == "true"}
+                      name="commander"
+                      onChange={(e) => {
+                        setSavedQuery((prevState) => {
+                          return {
+                            ...prevState,
+                            commander: e.target.checked.toString(),
+                          };
+                        });
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography
+                      variant="h5"
+                      color={savedQuery.commander ? "primary" : ""}
+                      sx={{ userSelect: "none" }}
+                    >
+                      Commander Only
                     </Typography>
                   }
                 />
