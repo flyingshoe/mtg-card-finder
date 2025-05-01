@@ -26,21 +26,21 @@ interface ShopItemProps {
 const maxCards = 4;
 const allShops = [
   "Agora Hobby",
-  "Card Affinity",
-  "Cardboard Crack Games",
+  // "Card Affinity",
+  // "Cardboard Crack Games",
   "Cards Citadel",
-  "Cards & Collections",
-  "Dueller's Point",
-  "Flagship Games",
-  "Games Haven",
+  // "Cards & Collections",
+  // "Dueller's Point",
+  // "Flagship Games",
+  // "Games Haven",
   "Grey Ogre Games",
   "Hideout",
-  "Mana Pro",
-  "Mox & Lotus",
+  // "Mana Pro",
+  // "Mox & Lotus",
   "MTG Asia",
   "OneMtg",
-  "Tefuda",
-  "The TCG Marketplace",
+  // "Tefuda",
+  // "The TCG Marketplace",
 ];
 
 const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
