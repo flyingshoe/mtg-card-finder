@@ -77,7 +77,11 @@ export default function MtgCard({
       },
     });
     setLoading(false);
-    setShopList(res.data.data.slice(0, maxCards));
+    setShopList(
+      res.data.data
+        .filter((card: ShopItemProps) => card.name == cardName && card.inStock)
+        .slice(0, maxCards)
+    );
   };
 
   const CardOverlay = () => {
