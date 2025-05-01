@@ -2,9 +2,11 @@
 
 import {
   AppBar,
+  Autocomplete,
   Avatar,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   createTheme,
   CssBaseline,
@@ -15,6 +17,7 @@ import {
   Pagination,
   styled,
   Switch,
+  TextField,
   ThemeProvider,
   Toolbar,
   Typography,
@@ -467,6 +470,34 @@ export default function CardFinder() {
     };
   }, []);
 
+  const [open, setOpen] = useState(false);
+  const [autocompleteList, setAutocompleteList] = useState<readonly string[]>(
+    []
+  );
+  const [loadingAutocomplete, setLoadingAutocomplete] = useState(false);
+  const onAutocomplete = (cardName: string) => {
+    (async () => {
+      setLoadingAutocomplete(true);
+      axios
+        .get("https://api.scryfall.com/cards/autocomplete", {
+          params: {
+            q: cardName,
+          },
+        })
+        .then((res) => {
+          setAutocompleteList([...res.data.data]);
+        })
+        .finally(() => {
+          setLoadingAutocomplete(false);
+        });
+    })();
+  };
+
+  const handleCloseAutocomplete = () => {
+    setOpen(false);
+    setAutocompleteList([]);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -530,14 +561,46 @@ export default function CardFinder() {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="flex flex-wrap md:space-x-8">
-                  <MtgTextField
-                    label="Card Name"
-                    name="name"
+                  <Autocomplete
+                    className="w-full sm:w-full md:w-56"
+                    freeSolo
+                    open={open}
+                    onOpen={() => setOpen(true)}
+                    onClose={handleCloseAutocomplete}
+                    isOptionEqualToValue={(option, value) => option === value}
+                    getOptionLabel={(option) => option}
+                    options={autocompleteList}
+                    loading={loadingAutocomplete}
                     value={savedQuery.name}
-                    onChange={(e) => {
-                      setSavedQuery((q) => ({ ...q, name: e.target.value }));
-                    }}
+                    renderInput={(params) => (
+                      <MtgTextField
+                        params={params}
+                        label="Card Name"
+                        name="name"
+                        onChange={(e) => {
+                          setSavedQuery((q) => ({
+                            ...q,
+                            name: e.target.value,
+                          }));
+                          onAutocomplete(e.target.value);
+                        }}
+                        slotProps={{
+                          input: {
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {loadingAutocomplete ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          },
+                        }}
+                      />
+                    )}
                   />
+
                   <MtgTextField
                     label="Card Type"
                     name="type"
