@@ -17,13 +17,12 @@ import {
   Pagination,
   styled,
   Switch,
-  TextField,
   ThemeProvider,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Refresh, Search } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -475,9 +474,15 @@ export default function CardFinder() {
     []
   );
   const [loadingAutocomplete, setLoadingAutocomplete] = useState(false);
-  const onAutocomplete = (cardName: string) => {
-    (async () => {
-      setLoadingAutocomplete(true);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null); // Create a ref to store the timeout
+
+  const onAutocomplete = async (cardName: string) => {
+    setLoadingAutocomplete(true);
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current); // Clear the previous timeout if it exists
+    }
+
+    debounceTimeout.current = setTimeout(() => {
       axios
         .get("https://api.scryfall.com/cards/autocomplete", {
           params: {
@@ -490,7 +495,7 @@ export default function CardFinder() {
         .finally(() => {
           setLoadingAutocomplete(false);
         });
-    })();
+    }, 400); // Adjust the debounce delay 
   };
 
   const handleCloseAutocomplete = () => {

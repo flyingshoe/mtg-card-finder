@@ -31,7 +31,7 @@ export const MtgTextField: FC<{
       value={value}
       onChange={onChange}
       onFocus={(event) => event.target.select()}
-      {...slotProps}
+      slotProps={slotProps}
     />
   );
 };
