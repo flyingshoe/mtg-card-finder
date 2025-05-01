@@ -106,7 +106,7 @@ export default function MtgCard({
                 }}
               >
                 <CardOverlayIcon image={shop.img} url={shop.url} />
-                <div className="absolute bg-black bg-opacity-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="rounded-md p-1 absolute bg-black bg-opacity-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <div className="text-white text-sm text-center">
                     {shop.src}
                   </div>
