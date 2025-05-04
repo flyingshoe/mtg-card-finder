@@ -102,7 +102,9 @@ export default function MtgCard({
                 key={index}
                 className="w-full h-full relative"
                 onClick={() => {
-                  window.open(shop.url, "_blank");
+                  const url = new URL(shop.url);
+                  url.searchParams.delete("utm_source");
+                  window.open(url, "_blank");
                 }}
               >
                 <CardOverlayIcon image={shop.img} url={shop.url} />
