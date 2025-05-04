@@ -44,9 +44,7 @@ const allShops = [
   "The TCG Marketplace",
 ];
 
-const CardOverlayIcon: FC<{ image?: string; url: string }> = ({
-  image,
-}) => {
+const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
   return (
     <img
       className="rounded-xl hover:scale-110 duration-300"
@@ -58,10 +56,7 @@ const CardOverlayIcon: FC<{ image?: string; url: string }> = ({
   );
 };
 
-export default function MtgCard({
-  imageSrc,
-  cardName,
-}: CardProps) {
+export default function MtgCard({ imageSrc, cardName }: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [shopList, setShopList] = useState<ShopItemProps[]>([]);
   const [loading, setLoading] = useState(false);
@@ -77,7 +72,7 @@ export default function MtgCard({
     setLoading(false);
     setShopList(
       res.data.data
-        .filter((card: ShopItemProps) => card.name == cardName && card.inStock)
+        // .filter((card: ShopItemProps) => card.name.includes(cardName) && card.inStock)
         .slice(0, maxCards)
     );
   };
@@ -93,6 +88,8 @@ export default function MtgCard({
         </button>
         {loading ? (
           <CircularProgress />
+        ) : shopList.length <= 0 ? (
+          <div>Card not sold or API fail, I also dunno</div>
         ) : (
           <div className={`grid grid-cols-2 grid-rows-2 gap-1 h-full w-full`}>
             {shopList.map((shop, index) => (
