@@ -46,7 +46,6 @@ const allShops = [
 
 const CardOverlayIcon: FC<{ image?: string; url: string }> = ({
   image,
-  url,
 }) => {
   return (
     <img
@@ -61,7 +60,6 @@ const CardOverlayIcon: FC<{ image?: string; url: string }> = ({
 
 export default function MtgCard({
   imageSrc,
-  scryfallUrl,
   cardName,
 }: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
