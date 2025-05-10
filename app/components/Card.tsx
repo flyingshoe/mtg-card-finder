@@ -72,8 +72,8 @@ export default function MtgCard({ imageSrc, cardName }: CardProps) {
     setLoading(false);
     setShopList(
       res.data.data
-        .filter((card: ShopItemProps) => card.name.includes(cardName) && card.inStock)
-        .sort((a: ShopItemProps, b: ShopItemProps) => a.price - b.price) // Sort by price in ascending order
+        // .filter((card: ShopItemProps) => card.name.includes(cardName) && card.inStock)
+        // .sort((a: ShopItemProps, b: ShopItemProps) => a.price - b.price) // Sort by price in ascending order
         .slice(0, maxCards)
     );
   };
