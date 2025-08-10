@@ -9,7 +9,6 @@ export interface CardProps {
   name?: string;
   cmc?: number;
   imageSrc: string;
-  scryfallUrl: string;
   cardName: string;
 }
 
