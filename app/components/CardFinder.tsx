@@ -123,7 +123,7 @@ type CardFace = {
   color_indicator?: string[];
 };
 
-type ScryfallCard = {
+export type ScryfallCard = {
   object: "card";
   id: string;
   oracle_id: string;
@@ -530,7 +530,6 @@ export default function CardFinder() {
                         card?.card_faces?.[0]?.image_uris?.normal) ??
                       "images/mtg-card-back.jpeg"
                     }
-                    scryfallUrl={card?.scryfall_uri}
                     cardName={card.name}
                   />
                 ))}
