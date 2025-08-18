@@ -17,6 +17,15 @@ import {
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+const minCardVal = 3;
+
 export default function CardViewerPage() {
   const maxCards = 75;
   const fetchingInterval = 700;
@@ -26,6 +35,10 @@ export default function CardViewerPage() {
   const [loading, setLoading] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(true);
   const findCardsButtonRef = useRef<HTMLImageElement[]>([]);
+  const [lowestPrices, setLowestPrices] = useState<{
+    [key: string]: number;
+  }>({});
+  const [totalValue, setTotalValue] = useState(0);
 
   const showDrawer = () => {
     setDrawerOpened(true);
@@ -92,6 +105,8 @@ export default function CardViewerPage() {
             .map((r) => r.value.data.data)
             .flat()
         );
+        setTotalValue(0);
+        setLowestPrices({});
       })
       .finally(() => {
         setLoading(false);
@@ -108,6 +123,19 @@ export default function CardViewerPage() {
         actualIdx++;
       }
     });
+  };
+
+  const handleShopListChange = (cardName: string, lowestPrice: number) => {
+    const newLowestprices = { ...lowestPrices, [cardName]: lowestPrice };
+    setLowestPrices(newLowestprices);
+
+    let totalVal = 0;
+    for (const card in newLowestprices) {
+      if (newLowestprices[card] >= minCardVal) {
+        totalVal += newLowestprices[card];
+      }
+    }
+    setTotalValue(totalVal);
   };
 
   return (
@@ -164,6 +192,7 @@ export default function CardViewerPage() {
                 ref={(el: HTMLImageElement) => {
                   findCardsButtonRef.current[idx] = el;
                 }}
+                onShopListChange={handleShopListChange}
                 key={card.id}
                 imageSrc={
                   (card.image_uris?.normal ||
@@ -201,7 +230,7 @@ export default function CardViewerPage() {
           }}
           onClick={clickAllCards}
         >
-          <AttachMoney />
+          {totalValue == 0 ? <AttachMoney /> : formatter.format(totalValue)}
         </Fab>
       </Container>
     </ThemeProvider>

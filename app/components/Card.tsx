@@ -2,7 +2,7 @@ import { Cancel } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import axios from "axios";
 import Image from "next/image";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 export interface CardProps {
   id?: string;
@@ -11,6 +11,7 @@ export interface CardProps {
   imageSrc: string;
   cardName: string;
   ref?: React.Ref<HTMLImageElement | null>;
+  onShopListChange?: (cardName: string, lowestPrice: number) => void;
 }
 
 interface ShopItemProps {
@@ -56,10 +57,19 @@ const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
   );
 };
 
-export default function MtgCard({ imageSrc, cardName, ref }: CardProps) {
+export default function MtgCard({
+  imageSrc,
+  cardName,
+  ref,
+  onShopListChange,
+}: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [shopList, setShopList] = useState<ShopItemProps[]>([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    onShopListChange?.(cardName, showOverlay ? shopList[0]?.price ?? 0 : 0);
+  }, [shopList]);
 
   const fetchLowestPrice = (cardName: string) => {
     setLoading(true);
@@ -96,7 +106,10 @@ export default function MtgCard({ imageSrc, cardName, ref }: CardProps) {
       <div className="absolute inset-0 cursor-pointer bg-black bg-opacity-70 flex flex-col items-center justify-center gap-6">
         <button
           className="absolute top-2 right-2 duration-300 hover:shadow-[0px_0px_15px_white] rounded-full z-10"
-          onClick={() => setShowOverlay(false)}
+          onClick={() => {
+            setShowOverlay(false);
+            onShopListChange?.(cardName, 0);
+          }}
         >
           <Cancel sx={{ color: "white" }} />
         </button>
