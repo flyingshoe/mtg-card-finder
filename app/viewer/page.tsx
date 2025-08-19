@@ -200,6 +200,7 @@ export default function CardViewerPage() {
                   "images/mtg-card-back.jpeg"
                 }
                 cardName={card.name}
+                minCardVal={minCardVal}
               />
             ))}
           </div>

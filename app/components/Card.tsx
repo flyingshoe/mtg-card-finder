@@ -12,6 +12,7 @@ export interface CardProps {
   cardName: string;
   ref?: React.Ref<HTMLImageElement | null>;
   onShopListChange?: (cardName: string, lowestPrice: number) => void;
+  minCardVal?: number;
 }
 
 interface ShopItemProps {
@@ -62,6 +63,7 @@ export default function MtgCard({
   cardName,
   ref,
   onShopListChange,
+  minCardVal,
 }: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [shopList, setShopList] = useState<ShopItemProps[]>([]);
@@ -95,7 +97,7 @@ export default function MtgCard({
                 .slice(0, maxCards)
         );
       })
-      .catch((err) => {
+      .catch(() => {
         setLoading(false);
         setShowOverlay(false);
       });
@@ -103,7 +105,13 @@ export default function MtgCard({
 
   const CardOverlay = () => {
     return (
-      <div className="absolute inset-0 cursor-pointer bg-black bg-opacity-70 flex flex-col items-center justify-center gap-6">
+      <div
+        className={`absolute inset-0 cursor-pointer rounded-xl  bg-black bg-opacity-70 flex flex-col items-center justify-center gap-6 ${
+          minCardVal &&
+          shopList[0]?.price >= minCardVal &&
+          "border-4 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.9)]"
+        }`}
+      >
         <button
           className="absolute top-2 right-2 duration-300 hover:shadow-[0px_0px_15px_white] rounded-full z-10"
           onClick={() => {
