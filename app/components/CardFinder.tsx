@@ -29,6 +29,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import LoadingSkeleton from "@/app/components/LoadingSkeleton";
 import MtgCard from "@/app/components/Card";
 import { MtgTextField } from "@/app/components/MtgTextField";
+import Link from "next/link";
 
 interface SavedQueryProps {
   [key: string]: string; // Or `any` if values can have different types
@@ -495,7 +496,7 @@ export default function CardFinder() {
         .finally(() => {
           setLoadingAutocomplete(false);
         });
-    }, 400); // Adjust the debounce delay 
+    }, 400); // Adjust the debounce delay
   };
 
   const handleCloseAutocomplete = () => {
@@ -512,12 +513,14 @@ export default function CardFinder() {
             <LoadingSkeleton />
           ) : cardList.length == 0 && drawerOpened == false ? (
             <div className="flex justify-center items-center w-full h-dvh">
-              <Image
-                src="/images/card_not_found.webp"
-                width={500}
-                height={500}
-                alt="card_not_found_image"
-              />
+              <Link href="/viewer">
+                <Image
+                  src="/images/card_not_found.webp"
+                  width={500}
+                  height={500}
+                  alt="card_not_found_image"
+                />
+              </Link>
             </div>
           ) : (
             <>
