@@ -54,7 +54,7 @@ const myShops = [
   // "Cards & Collections",
   // "Dueller's Point",
   // "Flagship Games",
-  "Games Haven",
+  // "Games Haven",
   "Grey Ogre Games",
   "Hideout",
   // "Mana Pro",
@@ -62,7 +62,7 @@ const myShops = [
   "MTG Asia",
   "OneMtg",
   // "Tefuda",
-  "The TCG Marketplace",
+  // "The TCG Marketplace",
 ];
 
 const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
