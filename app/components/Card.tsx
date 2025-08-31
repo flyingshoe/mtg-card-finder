@@ -46,6 +46,25 @@ const allShops = [
   "The TCG Marketplace",
 ];
 
+const myShops = [
+  "Agora Hobby",
+  // "Card Affinity",
+  // "Cardboard Crack Games",
+  "Cards Citadel",
+  // "Cards & Collections",
+  // "Dueller's Point",
+  // "Flagship Games",
+  "Games Haven",
+  "Grey Ogre Games",
+  "Hideout",
+  // "Mana Pro",
+  // "Mox & Lotus",
+  "MTG Asia",
+  "OneMtg",
+  // "Tefuda",
+  "The TCG Marketplace",
+];
+
 const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
   return (
     <img
@@ -86,16 +105,30 @@ export default function MtgCard({
       .then((res) => {
         setLoading(false);
 
-        setShopList(
-          res.data.data == null // No Card found, show card not found message
-            ? []
-            : res.data.data
-                .filter(
-                  (card: ShopItemProps) => card.name == cardName && card.inStock
-                )
-                .sort((a: ShopItemProps, b: ShopItemProps) => a.price - b.price) // Sort by price in ascending order
-                .slice(0, maxCards)
-        );
+        // No Card found, show card not found message
+        if (res.data.data == null) {
+          setShopList([]);
+        } else {
+          const myShopList: React.SetStateAction<ShopItemProps[]> = [];
+          const orderedResponse = res.data.data
+            .filter(
+              (card: ShopItemProps) => card.name == cardName && card.inStock
+            )
+            .sort((a: ShopItemProps, b: ShopItemProps) => a.price - b.price); // Sort by price in ascending order
+
+          orderedResponse.forEach((shop: ShopItemProps, idx: number) => {
+            if (idx == 0) {
+              myShopList.push(shop);
+            } else if (
+              myShops.includes(shop.src) &&
+              myShopList.length < maxCards
+            ) {
+              myShopList.push(shop);
+            }
+          });
+
+          setShopList(myShopList);
+        }
       })
       .catch(() => {
         setLoading(false);
