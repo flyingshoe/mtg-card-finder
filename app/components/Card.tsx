@@ -13,6 +13,7 @@ export interface CardProps {
   ref?: React.Ref<HTMLImageElement | null>;
   onShopListChange?: (cardName: string, lowestPrice: number) => void;
   minCardVal?: number;
+  showAllShops?: boolean;
 }
 
 interface ShopItemProps {
@@ -83,6 +84,7 @@ export default function MtgCard({
   ref,
   onShopListChange,
   minCardVal,
+  showAllShops = false,
 }: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [shopList, setShopList] = useState<ShopItemProps[]>([]);
@@ -120,7 +122,7 @@ export default function MtgCard({
             if (idx == 0) {
               myShopList.push(shop);
             } else if (
-              myShops.includes(shop.src) &&
+              (showAllShops == true || myShops.includes(shop.src)) &&
               myShopList.length < maxCards
             ) {
               myShopList.push(shop);
