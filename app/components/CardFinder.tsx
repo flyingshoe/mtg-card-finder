@@ -32,14 +32,14 @@ import { MtgTextField } from "@/app/components/MtgTextField";
 import Link from "next/link";
 
 interface SavedQueryProps {
-  [key: string]: string; // Or `any` if values can have different types
   name: string;
   type: string;
   text: string;
   colors: string;
-  colorless: string;
-  showLands: string;
-  commander: string;
+  colorless: boolean;
+  showLands: boolean;
+  commander: boolean;
+  exactColors: boolean;
 }
 
 type ImageUris = {
@@ -252,9 +252,10 @@ export default function CardFinder() {
     type: "",
     text: "",
     colors: "",
-    colorless: "false",
-    showLands: "true",
-    commander: "true",
+    colorless: false,
+    exactColors: false,
+    showLands: true,
+    commander: true,
   };
   const [savedQuery, setSavedQuery] = useState<SavedQueryProps>(defaultState);
   const [showPaginationBar, setShowPaginationBar] = useState(false);
@@ -270,14 +271,18 @@ export default function CardFinder() {
     setDrawerOpened(false);
   };
 
-  function generateColorQuery(colors: string, colorless: string) {
-    if (colors && colorless == "true") {
-      return `(id<=${colors} or id:colorless)`;
+  function generateColorQuery(
+    colors: string,
+    colorless: boolean,
+    exactColors: boolean
+  ) {
+    if (colors && colorless == true) {
+      return `(id${exactColors ? "=" : "<="}${colors} or id:colorless)`;
     }
     if (colors) {
-      return `id<=${colors} -id:colorless`;
+      return `id${exactColors ? "=" : "<="}${colors} -id:colorless`;
     }
-    if (colorless == "true") {
+    if (colorless == true) {
       return "id:colorless";
     }
     return "";
@@ -290,6 +295,7 @@ export default function CardFinder() {
       type,
       text,
       colorless,
+      exactColors,
       showLands,
       commander,
     }: SavedQueryProps,
@@ -312,7 +318,7 @@ export default function CardFinder() {
 
     const query = [
       name,
-      generateColorQuery(colors, colorless),
+      generateColorQuery(colors, colorless, exactColors),
       type &&
         `(${parseString(type)
           .map((q) => `t:${q}`)
@@ -321,8 +327,8 @@ export default function CardFinder() {
         `(${parseString(text)
           .map((q) => `o:${q}`)
           .join(" ")})`,
-      showLands != "true" && "-t:land",
-      commander == "true" && "f:commander",
+      showLands != true && "-t:land",
+      commander == true && "f:commander",
       "(game:paper)",
     ];
 
@@ -371,6 +377,7 @@ export default function CardFinder() {
       colorless: savedQuery.colorless,
       showLands: savedQuery.showLands,
       commander: savedQuery.commander,
+      exactColors: savedQuery.exactColors,
     };
 
     setSavedQuery(data);
@@ -430,12 +437,35 @@ export default function CardFinder() {
   }, [searchParams]);
 
   const getParams = () => {
-    const queryObject: SavedQueryProps = {} as SavedQueryProps;
-    for (const [key, value] of searchParams.entries()) {
-      queryObject[key] = value;
-    }
+    const queryObject: Record<string, string | boolean | null> = {
+      ...(searchParams.get("name") != null && {
+        name: searchParams.get("name"),
+      }),
+      ...(searchParams.get("type") != null && {
+        type: searchParams.get("type"),
+      }),
+      ...(searchParams.get("text") != null && {
+        text: searchParams.get("text"),
+      }),
+      ...(searchParams.get("colors") != null && {
+        colors: searchParams.get("colors"),
+      }),
+      ...(searchParams.get("colorless") != null && {
+        colorless: searchParams.get("colorless") == "true",
+      }),
+      ...(searchParams.get("showLands") != null && {
+        showLands: searchParams.get("showLands") == "true",
+      }),
+      ...(searchParams.get("commander") != null && {
+        commander: searchParams.get("commander") == "true",
+      }),
+      ...(searchParams.get("exactColors") != null && {
+        exactColors: searchParams.get("exactColors") == "true",
+      }),
+    };
+
     setSavedQuery({ ...defaultState, ...queryObject });
-    if (Object.keys(queryObject).length > 0) {
+    if (searchParams.size > 0) {
       setTimeout(() => {
         fetchCard({ ...defaultState, ...queryObject }, "1");
       }, 100);
@@ -445,7 +475,10 @@ export default function CardFinder() {
   const setParams = (latestSavedQuery: SavedQueryProps) => {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(latestSavedQuery)) {
-      if (value?.trim() !== "") {
+      if (
+        (typeof value == "string" && value?.trim() !== "") ||
+        typeof value != "string"
+      ) {
         params.set(key, value);
       }
     }
@@ -655,13 +688,13 @@ export default function CardFinder() {
                     control={
                       <Checkbox
                         size="large"
-                        checked={savedQuery.colorless == "true"}
+                        checked={savedQuery.colorless == true}
                         name="colorless"
                         onChange={(e) => {
                           setSavedQuery((prevState) => {
                             return {
                               ...prevState,
-                              colorless: e.target.checked.toString(),
+                              colorless: e.target.checked,
                             };
                           });
                         }}
@@ -676,18 +709,44 @@ export default function CardFinder() {
                       />
                     }
                   />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="large"
+                        checked={savedQuery.exactColors == true}
+                        name="exactColors"
+                        onChange={(e) => {
+                          setSavedQuery((prevState) => {
+                            return {
+                              ...prevState,
+                              exactColors: e.target.checked,
+                            };
+                          });
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography
+                        variant="h5"
+                        color={savedQuery.exactColors ? "primary" : ""}
+                        sx={{ userSelect: "none" }}
+                      >
+                        Exact Colors
+                      </Typography>
+                    }
+                  />
                 </FormGroup>
                 <FormControlLabel
                   control={
                     <Checkbox
                       size="large"
-                      checked={savedQuery.showLands == "true"}
+                      checked={savedQuery.showLands == true}
                       name="showLands"
                       onChange={(e) => {
                         setSavedQuery((prevState) => {
                           return {
                             ...prevState,
-                            showLands: e.target.checked.toString(),
+                            showLands: e.target.checked,
                           };
                         });
                       }}
@@ -708,13 +767,13 @@ export default function CardFinder() {
                   control={
                     <Checkbox
                       size="large"
-                      checked={savedQuery.commander == "true"}
+                      checked={savedQuery.commander == true}
                       name="commander"
                       onChange={(e) => {
                         setSavedQuery((prevState) => {
                           return {
                             ...prevState,
-                            commander: e.target.checked.toString(),
+                            commander: e.target.checked,
                           };
                         });
                       }}
