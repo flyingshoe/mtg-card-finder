@@ -13,13 +13,12 @@ import {
   Fab,
   TextField,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 
 const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
   minimumFractionDigits: 1,
   maximumFractionDigits: 1,
 });
@@ -38,6 +37,7 @@ export default function CardViewerPage() {
   const [lowestPrices, setLowestPrices] = useState<{
     [key: string]: number;
   }>({});
+  const [totalTargetValue, setTotalTargetValue] = useState(0); // sum of cards above minCardVal
   const [totalValue, setTotalValue] = useState(0);
 
   const showDrawer = () => {
@@ -106,6 +106,7 @@ export default function CardViewerPage() {
             .flat()
         );
         setTotalValue(0);
+        setTotalTargetValue(0);
         setLowestPrices({});
       })
       .finally(() => {
@@ -129,12 +130,15 @@ export default function CardViewerPage() {
     const newLowestprices = { ...lowestPrices, [cardName]: lowestPrice };
     setLowestPrices(newLowestprices);
 
+    let totalSpecifiedVal = 0;
     let totalVal = 0;
     for (const card in newLowestprices) {
       if (newLowestprices[card] >= minCardVal) {
-        totalVal += newLowestprices[card];
+        totalSpecifiedVal += newLowestprices[card];
       }
+      totalVal += newLowestprices[card];
     }
+    setTotalTargetValue(totalSpecifiedVal);
     setTotalValue(totalVal);
   };
 
@@ -232,7 +236,18 @@ export default function CardViewerPage() {
           }}
           onClick={clickAllCards}
         >
-          {totalValue == 0 ? <AttachMoney /> : formatter.format(totalValue)}
+          {totalValue == 0 ? (
+            <AttachMoney />
+          ) : (
+            <div className="flex flex-col items-center justify-center">
+              <Typography variant="body2" sx={{ lineHeight: 1.2 }}>
+                ${formatter.format(totalTargetValue)}
+              </Typography>
+              <Typography variant="body2" sx={{ lineHeight: 1.2 }}>
+                ${formatter.format(totalValue)}
+              </Typography>
+            </div>
+          )}
         </Fab>
       </Container>
     </ThemeProvider>
