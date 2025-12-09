@@ -27,7 +27,7 @@ const minCardVal = 3;
 
 export default function CardViewerPage() {
   const maxCards = 75;
-  const fetchingInterval = 700;
+  const fetchingInterval = 1000;
   const [rawCardList, setRawCardList] = useState("");
   const [formattedCardList, setFormattedCardList] = useState<string[]>([]);
   const [cardList, setCardList] = useState<ScryfallCard[]>([]);
