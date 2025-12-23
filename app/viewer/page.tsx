@@ -196,7 +196,7 @@ export default function CardViewerPage() {
                 ref={(el: HTMLImageElement) => {
                   findCardsButtonRef.current[idx] = el;
                 }}
-                showAllShops={true}
+                // showAllShops={true}
                 onShopListChange={handleShopListChange}
                 key={card.id}
                 imageSrc={
