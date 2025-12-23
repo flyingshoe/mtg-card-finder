@@ -105,7 +105,7 @@ export default function MtgCard({
       .get("/lowest-price", {
         params: {
           s: cardName,
-          lgs: allShops.join(","),
+          lgs: showAllShops ? allShops.join(",") : myShops.join(","),
         },
       })
       .then((res) => {
@@ -125,10 +125,7 @@ export default function MtgCard({
           orderedResponse.forEach((shop: ShopItemProps, idx: number) => {
             if (idx == 0) {
               myShopList.push(shop);
-            } else if (
-              (showAllShops == true || myShops.includes(shop.src)) &&
-              myShopList.length < maxCards
-            ) {
+            } else if (myShopList.length < maxCards) {
               myShopList.push(shop);
             }
           });
