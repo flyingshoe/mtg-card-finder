@@ -29,6 +29,7 @@ interface ShopItemProps {
 
 const maxCards = 4;
 const allShops = [
+  "5 Mana",
   "Agora Hobby",
   "Card Affinity",
   "Cardboard Crack Games",
@@ -45,25 +46,28 @@ const allShops = [
   "OneMtg",
   "Tefuda",
   "The TCG Marketplace",
+  "Unsleeved",
 ];
 
 const myShops = [
+  "5 Mana",
   "Agora Hobby",
-  // "Card Affinity",
-  // "Cardboard Crack Games",
+  "Card Affinity",
+  "Cardboard Crack Games",
   "Cards Citadel",
-  // "Cards & Collections",
-  // "Dueller's Point",
-  // "Flagship Games",
+  "Cards & Collections",
+  "Dueller's Point",
+  "Flagship Games",
   "Games Haven",
   "Grey Ogre Games",
   "Hideout",
-  // "Mana Pro",
-  // "Mox & Lotus",
+  "Mana Pro",
+  "Mox & Lotus",
   "MTG Asia",
   "OneMtg",
-  // "Tefuda",
+  "Tefuda",
   "The TCG Marketplace",
+  "Unsleeved",
 ];
 
 const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
