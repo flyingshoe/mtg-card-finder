@@ -57,24 +57,24 @@ const allShops = [
 ];
 
 const myShops = [
-  "5 Mana",
+  // "5 Mana",
   "Agora Hobby",
-  "Card Affinity",
-  "Cardboard Crack Games",
+  // "Card Affinity",
+  // "Cardboard Crack Games",
   "Cards Citadel",
-  "Cards & Collections",
-  "Dueller's Point",
-  "Flagship Games",
+  // "Cards & Collections",
+  // "Dueller's Point",
+  // "Flagship Games",
   "Games Haven",
   "Grey Ogre Games",
   "Hideout",
-  "Mana Pro",
-  "Mox & Lotus",
+  // "Mana Pro",
+  // "Mox & Lotus",
   "MTG Asia",
   "OneMtg",
-  "Tefuda",
+  // "Tefuda",
   "The TCG Marketplace",
-  "Unsleeved",
+  // "Unsleeved",
 ];
 
 const transformLogoUrl =
