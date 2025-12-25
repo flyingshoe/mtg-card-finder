@@ -2,10 +2,11 @@
 import MtgCard from "@/app/components/Card";
 import { ScryfallCard } from "@/app/components/CardFinder";
 import LoadingSkeleton from "@/app/components/LoadingSkeleton";
-import { AttachMoney, Search } from "@mui/icons-material";
+import { AttachMoney, Search, Share } from "@mui/icons-material";
 import {
   Avatar,
   Button,
+  ClickAwayListener,
   Container,
   createTheme,
   CssBaseline,
@@ -13,6 +14,7 @@ import {
   Fab,
   TextField,
   ThemeProvider,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -56,8 +58,24 @@ export default function CardViewerPage() {
     setFormattedCardList(lines);
   }, [rawCardList]);
 
-  // Keyboard event listener
+  const [open, setOpen] = useState(false);
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
   useEffect(() => {
+    // Read url params on initial load
+    const urlParams = new URLSearchParams(window.location.search);
+    const cardsParam = urlParams.get("cards");
+    if (cardsParam) {
+      const decodedCards = decodeURIComponent(cardsParam);
+      setRawCardList(decodedCards);
+    }
+
+    // Keyboard event listener
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         showDrawer();
@@ -69,6 +87,14 @@ export default function CardViewerPage() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const shareLink = () => {
+    const encodedList = encodeURIComponent(rawCardList);
+    const baseUrl = window.location.origin + "/viewer";
+    const shareUrl = `${baseUrl}?cards=${encodedList}`;
+    navigator.clipboard.writeText(shareUrl);
+    handleTooltipOpen();
+  };
 
   function fetchCard() {
     hideDrawer();
@@ -175,7 +201,29 @@ export default function CardViewerPage() {
                 onChange={(e) => setRawCardList(e.target.value)}
               />
               <div className="flex flex-row w-full justify-end space-x-2 mt-4">
+                <ClickAwayListener onClickAway={handleTooltipClose}>
+                  <Tooltip
+                    title="URL copied to clipboard!"
+                    placement="bottom"
+                    onClose={handleTooltipClose}
+                    open={open}
+                    disableFocusListener
+                    disableHoverListener
+                    disableTouchListener
+                  >
+                    <Button
+                      className="grow"
+                      color="secondary"
+                      startIcon={<Share />}
+                      variant="outlined"
+                      onClick={shareLink}
+                    >
+                      Share URL
+                    </Button>
+                  </Tooltip>
+                </ClickAwayListener>
                 <Button
+                  className="grow"
                   startIcon={<Search />}
                   variant="contained"
                   type="submit"
