@@ -49,26 +49,7 @@ const allShops = [
   "Unsleeved",
 ];
 
-const myShops = [
-  "5 Mana",
-  "Agora Hobby",
-  "Card Affinity",
-  "Cardboard Crack Games",
-  "Cards Citadel",
-  "Cards & Collections",
-  "Dueller's Point",
-  "Flagship Games",
-  "Games Haven",
-  "Grey Ogre Games",
-  "Hideout",
-  "Mana Pro",
-  "Mox & Lotus",
-  "MTG Asia",
-  "OneMtg",
-  "Tefuda",
-  "The TCG Marketplace",
-  "Unsleeved",
-];
+const myShops = ["The TCG Marketplace"];
 
 const CardOverlayIcon: FC<{ image?: string; url: string }> = ({ image }) => {
   return (
