@@ -254,6 +254,7 @@ export default function CardViewerPage() {
                 }
                 cardName={card.name}
                 minCardVal={minCardVal}
+                cardFaces={card.card_faces}
               />
             ))}
           </div>

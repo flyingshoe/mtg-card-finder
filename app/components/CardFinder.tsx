@@ -567,6 +567,7 @@ export default function CardFinder() {
                       "images/mtg-card-back.jpeg"
                     }
                     cardName={card.name}
+                    cardFaces={card.card_faces}
                   />
                 ))}
               </div>
