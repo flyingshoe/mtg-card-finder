@@ -591,7 +591,7 @@ export default function CardFinder() {
               <div className="flex justify-between items-center">
                 <Typography variant="h4" gutterBottom color="primary.main">
                   <span className="hidden sm:block">
-                    MTG Commander Card Finder
+                    MTG Card Finder
                   </span>
                   <span className="block sm:hidden">MTG Card Finder</span>
                 </Typography>
