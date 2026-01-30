@@ -31,6 +31,7 @@ export default function CardViewerPage() {
   const maxCards = 75;
   const fetchingInterval = 1000;
   const [rawCardList, setRawCardList] = useState("");
+  const [rawCardListLength, setRawCardListLength] = useState(0);
   const [formattedCardList, setFormattedCardList] = useState<string[]>([]);
   const [cardList, setCardList] = useState<ScryfallCard[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,6 +56,7 @@ export default function CardViewerPage() {
       .split("\n")
       .filter((line) => line.trim() !== "")
       .map((line) => line.trim());
+    setRawCardListLength(lines.length);
     setFormattedCardList(lines);
   }, [rawCardList]);
 
@@ -195,7 +197,7 @@ export default function CardViewerPage() {
             <div className="flex flex-col justify-between items-center">
               <TextField
                 className="w-full"
-                label="Paste card list here"
+                label={`Paste card list here ${rawCardListLength ? `- ${rawCardListLength} ${rawCardListLength === 1 ? "Card" : "Cards"}` : ""}`}
                 multiline
                 rows={20}
                 value={rawCardList}
