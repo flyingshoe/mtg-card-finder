@@ -28,7 +28,7 @@ const formatter = new Intl.NumberFormat("en-US", {
 const minCardVal = 3;
 
 export default function CardViewerPage() {
-  const maxCards = 75;
+  const maxCards = 75; // Scryfall API limit per request
   const fetchingInterval = 1000;
   const [rawCardList, setRawCardList] = useState("");
   const [rawCardListLength, setRawCardListLength] = useState(0);
@@ -102,6 +102,7 @@ export default function CardViewerPage() {
     hideDrawer();
     setLoading(true);
 
+    // Split into multiple requests if it exceeds scryfall limit (maxCards)
     const chunkedCardList: string[][] = [];
     const noOfChunks = Math.ceil(formattedCardList.length / maxCards);
 
@@ -134,6 +135,16 @@ export default function CardViewerPage() {
             .map((r) => r.value.data.data)
             .flat(),
         );
+        const notFoundList = res
+          .filter((r) => r.status === "fulfilled")
+          .map((r) => r.value.data["not_found"])
+          .flat()
+          .map((item: { name: string }) => item.name);
+        if (notFoundList.length > 0) {
+          alert(
+            `The following cards were not found:\n${notFoundList.join("\n")}`,
+          );
+        }
         setTotalValue(0);
         setTotalTargetValue(0);
         setLowestPrices({});
