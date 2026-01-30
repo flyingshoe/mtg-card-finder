@@ -105,7 +105,7 @@ export default function CardViewerPage() {
 
     for (let i = 0; i < noOfChunks; i++) {
       chunkedCardList.push(
-        formattedCardList.slice(i * maxCards, maxCards * (i + 1))
+        formattedCardList.slice(i * maxCards, maxCards * (i + 1)),
       );
     }
 
@@ -117,19 +117,20 @@ export default function CardViewerPage() {
               .replace(/^\d+\s*/, "") // remove number + space at start
               .replace(/\[.*?\]/g, "") // remove [ ... ]
               .replace(/\(.*?\)/g, "") // remove (...)
+              .replace(/\<.*?\>/g, "") // remove <...>
               .replace(/\s\d+$/, "") // remove trailing number
               .replace(/\s+/g, " ") // clean up extra spaces
               .trim(),
           })),
-        })
-      )
+        }),
+      ),
     )
       .then((res) => {
         setCardList(
           res
             .filter((r) => r.status === "fulfilled")
             .map((r) => r.value.data.data)
-            .flat()
+            .flat(),
         );
         setTotalValue(0);
         setTotalTargetValue(0);
