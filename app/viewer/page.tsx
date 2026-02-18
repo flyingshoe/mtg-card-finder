@@ -52,29 +52,13 @@ export default function CardViewerPage() {
   };
 
   useEffect(() => {
-    const lines = rawCardList
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .map((line) => line.trim());
-    setRawCardListLength(lines.length);
-    setFormattedCardList(lines);
-  }, [rawCardList]);
-
-  const [open, setOpen] = useState(false);
-  const handleTooltipClose = () => {
-    setOpen(false);
-  };
-  const handleTooltipOpen = () => {
-    setOpen(true);
-  };
-
-  useEffect(() => {
     // Read url params on initial load
     const urlParams = new URLSearchParams(window.location.search);
     const cardsParam = urlParams.get("cards");
     if (cardsParam) {
       const decodedCards = decodeURIComponent(cardsParam);
       setRawCardList(decodedCards);
+      initialCardsParam.current = true;
     }
 
     // Keyboard event listener
@@ -90,6 +74,33 @@ export default function CardViewerPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const lines = rawCardList
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .map((line) => line.trim());
+    setRawCardListLength(lines.length);
+    setFormattedCardList(lines);
+    // If initial load provided cards via URL param, automatically fetch after
+    // formatting is applied. Pass the computed lines to avoid stale state.
+    if (initialCardsParam.current && lines.length > 0) {
+      fetchCard(lines);
+      initialCardsParam.current = false;
+    }
+  }, [rawCardList]);
+
+  // Track whether the initial URL contained cards so we can trigger fetch
+  // after both effects have run.
+  const initialCardsParam = useRef(false);
+
+  const [open, setOpen] = useState(false);
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
   const shareLink = () => {
     const encodedList = encodeURIComponent(rawCardList);
     const baseUrl = window.location.origin + "/viewer";
@@ -98,18 +109,19 @@ export default function CardViewerPage() {
     handleTooltipOpen();
   };
 
-  function fetchCard() {
+  function fetchCard(cardNames?: string[]) {
     hideDrawer();
     setLoading(true);
 
+    // Use provided card names (from the effect) or current state
+    const listToUse = cardNames ?? formattedCardList;
+
     // Split into multiple requests if it exceeds scryfall limit (maxCards)
     const chunkedCardList: string[][] = [];
-    const noOfChunks = Math.ceil(formattedCardList.length / maxCards);
+    const noOfChunks = Math.ceil(listToUse.length / maxCards);
 
     for (let i = 0; i < noOfChunks; i++) {
-      chunkedCardList.push(
-        formattedCardList.slice(i * maxCards, maxCards * (i + 1)),
-      );
+      chunkedCardList.push(listToUse.slice(i * maxCards, maxCards * (i + 1)));
     }
 
     Promise.allSettled(
@@ -241,7 +253,7 @@ export default function CardViewerPage() {
                   startIcon={<Search />}
                   variant="contained"
                   type="submit"
-                  onClick={fetchCard}
+                  onClick={() => fetchCard()}
                 >
                   Find Cards
                 </Button>
