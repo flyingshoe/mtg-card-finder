@@ -119,7 +119,7 @@ export default function MtgCard({
     setLoading(true);
 
     axios
-      .get("/lowest-price", {
+      .get("/api/fetchPrice", {
         params: {
           s: cardName,
           lgs: showAllShops ? allShops.join(",") : myShops.join(","),

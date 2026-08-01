@@ -9,14 +9,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: "/lowest-price/:path*",
-        destination: "https://api.gishathfetch.com/:path*",
-      },
-    ];
-  },
 };
 
 export default nextConfig;
