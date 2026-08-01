@@ -60,24 +60,13 @@ const allShops = [
 
 const myShops = [
   "5 Mana",
-  "Agora Hobby",
-  "Arcane Sanctum",
-  "Card Affinity",
-  "Cardboard Crack Games",
   "Cards Citadel",
-  "Cards & Collections",
-  "Dueller's Point",
-  "Flagship Games",
   "Games Haven",
   "Grey Ogre Games",
   "Hideout",
-  "Mana Pro",
-  "Mox & Lotus",
   "MTG Asia",
   "OneMtg",
-  "Tefuda",
   "The TCG Marketplace",
-  "Unsleeved",
 ];
 
 const transformLogoUrl =
@@ -102,7 +91,7 @@ export default function MtgCard({
   onShopListChange,
   onPriceFetchComplete,
   minCardVal,
-  showAllShops = true,
+  showAllShops = false,
   cardFaces,
 }: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
