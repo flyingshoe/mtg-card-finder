@@ -40,21 +40,21 @@ const allShops = [
   "Agora Hobby",
   "Arcane Sanctum",
   "Card Affinity",
-  "Cardboard Crack Games",
-  "Cards Citadel",
   "Cards & Collections",
+  "Cards Central",
+  "Cards Citadel",
   "Dueller's Point",
   "Flagship Games",
+  "Fyendal Hobby",
   "Games Haven",
   "Grey Ogre Games",
   "Hideout",
+  "Hideyoshi",
   "Mana Pro",
   "Mox & Lotus",
   "MTG Asia",
   "OneMtg",
-  "Tefuda",
   "The TCG Marketplace",
-  "Unsleeved",
 ];
 
 const myShops = [
@@ -100,7 +100,7 @@ export default function MtgCard({
   ref,
   onShopListChange,
   minCardVal,
-  showAllShops = false,
+  showAllShops = true,
   cardFaces,
 }: CardProps) {
   const [showOverlay, setShowOverlay] = useState(false);
