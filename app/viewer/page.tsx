@@ -29,7 +29,6 @@ const minCardVal = 3;
 
 export default function CardViewerPage() {
   const maxCards = 75; // Scryfall API limit per request
-  const fetchingInterval = 1000;
   const [rawCardList, setRawCardList] = useState("");
   const [rawCardListLength, setRawCardListLength] = useState(0);
   const [formattedCardList, setFormattedCardList] = useState<string[]>([]);
@@ -37,6 +36,7 @@ export default function CardViewerPage() {
   const [loading, setLoading] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(true);
   const findCardsButtonRef = useRef<HTMLImageElement[]>([]);
+  const priceFetchResolvers = useRef<Array<(() => void) | undefined>>([]);
   const [lowestPrices, setLowestPrices] = useState<{
     [key: string]: number;
   }>({});
@@ -166,16 +166,16 @@ export default function CardViewerPage() {
       });
   }
 
-  const clickAllCards = () => {
-    let actualIdx = 0;
-    findCardsButtonRef.current.forEach((el) => {
-      if (el && el.alt == "hidden") {
-        setTimeout(() => {
-          el.click();
-        }, fetchingInterval * actualIdx);
-        actualIdx++;
-      }
-    });
+  const clickAllCards = async () => {
+    for (const [idx, el] of findCardsButtonRef.current.entries()) {
+      if (!el || el.alt !== "hidden") continue;
+
+      await new Promise<void>((resolve) => {
+        priceFetchResolvers.current[idx] = resolve;
+        el.click();
+      });
+      priceFetchResolvers.current[idx] = undefined;
+    }
   };
 
   const handleShopListChange = (cardName: string, lowestPrice: number) => {
@@ -269,6 +269,9 @@ export default function CardViewerPage() {
               <MtgCard
                 ref={(el: HTMLImageElement) => {
                   findCardsButtonRef.current[idx] = el;
+                }}
+                onPriceFetchComplete={() => {
+                  priceFetchResolvers.current[idx]?.();
                 }}
                 // showAllShops={true}
                 onShopListChange={handleShopListChange}

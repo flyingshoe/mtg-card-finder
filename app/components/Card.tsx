@@ -18,6 +18,7 @@ export interface CardProps {
   cardName: string;
   ref?: React.Ref<HTMLImageElement | null>;
   onShopListChange?: (cardName: string, lowestPrice: number) => void;
+  onPriceFetchComplete?: () => void;
   minCardVal?: number;
   showAllShops?: boolean;
   cardFaces?: CardFaces[] | null;
@@ -99,6 +100,7 @@ export default function MtgCard({
   cardName,
   ref,
   onShopListChange,
+  onPriceFetchComplete,
   minCardVal,
   showAllShops = true,
   cardFaces,
@@ -153,6 +155,9 @@ export default function MtgCard({
       .catch(() => {
         setLoading(false);
         setShowOverlay(false);
+      })
+      .finally(() => {
+        onPriceFetchComplete?.();
       });
   };
 
