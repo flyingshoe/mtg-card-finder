@@ -120,11 +120,14 @@ export default function MtgCard({
   const fetchLowestPrice = (cardName: string) => {
     setLoading(true);
 
+    const cookie = new URLSearchParams(window.location.search).get("cookie") ?? "";
+
     axios
       .get("/api/fetchPrice", {
         params: {
           s: cardName,
           lgs: showAllShops ? allShops.join(",") : myShops.join(","),
+          ...(cookie ? { cookie } : {}),
         },
       })
       .then((res) => {

@@ -2,21 +2,25 @@ export const maxDuration = 60;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const cookie = searchParams.get("cookie") ?? "";
+  const upstreamParams = new URLSearchParams(searchParams.toString());
+  upstreamParams.delete("cookie");
 
   // Fetch the cookies before we HOOT the API
-  const getCookies = await fetch("https://api.gishathfetch.com/session", {
-    headers: {
-      Origin: "https://gishathfetch.com",
-    },
-  });
+  // const getCookies = await fetch("https://api.gishathfetch.com/session", {
+  //   headers: {
+  //     Origin: "https://gishathfetch.com",
+  //   },
+  // });
 
   // HOOT!!!
   const getPriceRes = await fetch(
-    `https://api.gishathfetch.com/search?${searchParams.toString()}`,
+    `https://api.gishathfetch.com/search?${upstreamParams.toString()}`,
     {
       headers: {
         Origin: "https://gishathfetch.com",
-        Cookie: getCookies.headers.get("set-cookie")?.split(";")[0] || "",
+        // Cookie: getCookies.headers.get("set-cookie")?.split(";")[0] || "",
+        ...(cookie ? { Cookie: cookie } : {}),
       },
     },
   );
