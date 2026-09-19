@@ -78,7 +78,7 @@ export default function CardViewerPage() {
     const lines = rawCardList
       .split("\n")
       .filter((line) => line.trim() !== "")
-      .map((line) => line.trim());
+      .map((line) => line.split("//")[0].trim()); // Remove comments after //
     setRawCardListLength(lines.length);
     setFormattedCardList(lines);
     // If initial load provided cards via URL param, automatically fetch after
