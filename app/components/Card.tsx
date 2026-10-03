@@ -25,14 +25,28 @@ export interface CardProps {
 }
 
 interface ShopItemProps {
-  name: string;
   url: string;
   img: string;
   price: number;
-  inStock: boolean;
   src: string;
-  quality: string;
-  extraInfo: string;
+}
+
+interface MarketplaceProduct {
+  encoded_id: string;
+  name: string;
+  image: string | null;
+  available: number;
+  from: string | null;
+}
+
+interface PriceApiResponse {
+  status: number;
+  data: {
+    data: MarketplaceProduct[];
+  };
+  meta: {
+    total: number;
+  };
 }
 
 const maxCards = 4;
@@ -101,42 +115,46 @@ export default function MtgCard({
     setLoading(true);
 
     axios
-      .get("/api/fetchPrice", {
+      .get<PriceApiResponse>("/api/fetchPrice", {
         params: {
           s: cardName,
-          lgs: showAllShops ? allShops.join(",") : myShops.join(","),
+          // lgs: showAllShops ? allShops.join(",") : myShops.join(","),
         },
       })
-      .then((res) => {
-        setLoading(false);
+      .then(({ data }) => {
+        const orderedResponse = data.data.data
+          .map((product) => ({
+            product,
+            price: Number(product.from),
+            cardName: product.name
+              .replace(/^\s*\[[^\]]+\]\s*/, "")
+              .trim(),
+          }))
+          .filter(
+            ({ product, price, cardName: productCardName }) =>
+              (productCardName === cardName ||
+                productCardName.startsWith(`${cardName} (`)) &&
+              product.available > 0 &&
+              product.from !== null &&
+              Number.isFinite(price),
+          )
+          .sort((a, b) => a.price - b.price)
+          .slice(0, maxCards)
+          .map(({ product, price }) => ({
+            url: `https://thetcgmarketplace.com/product/B/${product.encoded_id}/0`,
+            img: product.image ?? "",
+            price,
+            src: product.name,
+          }));
 
-        // No Card found, show card not found message
-        if (res.data.data == null) {
-          setShopList([]);
-        } else {
-          const myShopList: React.SetStateAction<ShopItemProps[]> = [];
-          const orderedResponse = res.data.data
-            .filter(
-              (card: ShopItemProps) => card.name == cardName && card.inStock,
-            )
-            .sort((a: ShopItemProps, b: ShopItemProps) => a.price - b.price); // Sort by price in ascending order
-
-          orderedResponse.forEach((shop: ShopItemProps, idx: number) => {
-            if (idx == 0) {
-              myShopList.push(shop);
-            } else if (myShopList.length < maxCards) {
-              myShopList.push(shop);
-            }
-          });
-
-          setShopList(myShopList);
-        }
+        setShopList(orderedResponse);
       })
       .catch(() => {
         setLoading(false);
         setShowOverlay(false);
       })
       .finally(() => {
+        setLoading(false);
         onPriceFetchComplete?.();
       });
   };
