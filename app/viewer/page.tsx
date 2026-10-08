@@ -43,6 +43,14 @@ export default function CardViewerPage() {
   const [totalTargetValue, setTotalTargetValue] = useState(0); // sum of cards above minCardVal
   const [totalValue, setTotalValue] = useState(0);
 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("cookie")) {
+      url.searchParams.set("cookie", "");
+      window.history.replaceState(null, "", url);
+    }
+  }, []);
+
   const showDrawer = () => {
     setDrawerOpened(true);
   };
@@ -102,9 +110,9 @@ export default function CardViewerPage() {
   };
 
   const shareLink = () => {
-    const encodedList = encodeURIComponent(rawCardList);
-    const baseUrl = window.location.origin + "/viewer";
-    const shareUrl = `${baseUrl}?cards=${encodedList}`;
+    const params = new URLSearchParams(window.location.search);
+    params.set("cards", rawCardList);
+    const shareUrl = `${window.location.origin}/viewer?${params.toString()}`;
     navigator.clipboard.writeText(shareUrl);
     handleTooltipOpen();
   };

@@ -433,8 +433,15 @@ export default function CardFinder() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    if (!searchParams.has("cookie")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("cookie", "");
+      router.replace(`?${params.toString()}`, { scroll: false });
+      return;
+    }
+
     getParams();
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const getParams = () => {
     const queryObject: Record<string, string | boolean | null> = {
@@ -465,7 +472,18 @@ export default function CardFinder() {
     };
 
     setSavedQuery({ ...defaultState, ...queryObject });
-    if (searchParams.size > 0) {
+    const hasSearchParams = [
+      "name",
+      "type",
+      "text",
+      "colors",
+      "colorless",
+      "showLands",
+      "commander",
+      "exactColors",
+    ].some((key) => searchParams.has(key));
+
+    if (hasSearchParams) {
       setTimeout(() => {
         fetchCard({ ...defaultState, ...queryObject }, "1");
       }, 100);
@@ -473,7 +491,9 @@ export default function CardFinder() {
   };
 
   const setParams = (latestSavedQuery: SavedQueryProps) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({
+      cookie: searchParams.get("cookie") ?? "",
+    });
     for (const [key, value] of Object.entries(latestSavedQuery)) {
       if (
         (typeof value == "string" && value?.trim() !== "") ||
@@ -486,7 +506,10 @@ export default function CardFinder() {
   };
 
   const resetParams = () => {
-    router.push("/");
+    const params = new URLSearchParams({
+      cookie: searchParams.get("cookie") ?? "",
+    });
+    router.push(`/?${params.toString()}`);
   };
 
   // Keyboard event listener
@@ -546,7 +569,11 @@ export default function CardFinder() {
             <LoadingSkeleton />
           ) : cardList.length == 0 && drawerOpened == false ? (
             <div className="flex justify-center items-center w-full h-dvh">
-              <Link href="/viewer">
+              <Link
+                href={`/viewer?${new URLSearchParams({
+                  cookie: searchParams.get("cookie") ?? "",
+                }).toString()}`}
+              >
                 <Image
                   src="/images/card_not_found.webp"
                   width={500}
