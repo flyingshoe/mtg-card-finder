@@ -2,7 +2,7 @@ import { Cancel } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import axios from "axios";
 import Image from "next/image";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 
 export type CardFaces = {
   name: string;
@@ -112,6 +112,9 @@ export default function MtgCard({
     cardFaces?.[0].image_uris?.normal ?? imageSrc,
   );
   const [isFlipping, setIsFlipping] = useState(false);
+  const [isFaceLoading, setIsFaceLoading] = useState(false);
+  const loadingFaceSrc = useRef<string | null>(null);
+  const loadedFaceSrcs = useRef(new Set<string>());
 
   useEffect(() => {
     onShopListChange?.(cardName, showOverlay ? (shopList[0]?.price ?? 0) : 0);
@@ -120,7 +123,8 @@ export default function MtgCard({
   const fetchLowestPrice = (cardName: string) => {
     setLoading(true);
 
-    const cookie = new URLSearchParams(window.location.search).get("cookie") ?? "";
+    const cookie =
+      new URLSearchParams(window.location.search).get("cookie") ?? "";
 
     axios
       .get("/api/fetchPrice", {
@@ -239,34 +243,60 @@ export default function MtgCard({
             placeholder="blur"
             width={1000}
             height={1400}
+            onLoad={() => {
+              loadedFaceSrcs.current.add(displaySrc);
+              if (loadingFaceSrc.current !== displaySrc) return;
+
+              loadingFaceSrc.current = null;
+              setIsFaceLoading(false);
+              setIsFlipping(false);
+            }}
+            onError={() => {
+              if (loadingFaceSrc.current !== displaySrc) return;
+
+              loadingFaceSrc.current = null;
+              setIsFaceLoading(false);
+              setIsFlipping(false);
+            }}
             onClick={() => {
               fetchLowestPrice(cardName);
               setShowOverlay(true);
             }}
           />
         </div>
+        {isFaceLoading && (
+          <div
+            aria-label="Loading other side of card"
+            aria-live="polite"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900 text-white animate-pulse"
+          />
+        )}
         {cardFaces != null && (
           <Image
             unoptimized
-            className="rounded-full cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="rounded-full cursor-pointer absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
             alt="Transform card logo"
             src={transformLogoUrl}
             width={50}
             height={50}
             onClick={() => {
+              if (isFaceLoading) return;
+
+              const [front, back] = cardFaces;
+              const isFront = front && displaySrc === front.image_uris?.normal;
+              const nextFace =
+                !front || !back ? undefined : isFront ? back : front;
+              const nextSrc = nextFace?.image_uris?.normal ?? imageSrc;
+
+              if (nextSrc === displaySrc) return;
+
+              const isFaceCached = loadedFaceSrcs.current.has(nextSrc);
+              loadingFaceSrc.current = isFaceCached ? null : nextSrc;
+              setIsFaceLoading(!isFaceCached);
               setIsFlipping(true);
               setTimeout(() => {
-                setDisplaySrc((currentSrc) => {
-                  const [front, back] = cardFaces;
-
-                  if (!front || !back) return imageSrc;
-
-                  const isFront = currentSrc === front.image_uris?.normal;
-                  const nextFace = isFront ? back : front;
-
-                  return nextFace.image_uris?.normal ?? imageSrc;
-                });
-                setIsFlipping(false);
+                setDisplaySrc(nextSrc);
+                if (isFaceCached) setIsFlipping(false);
               }, 220);
             }}
           />
