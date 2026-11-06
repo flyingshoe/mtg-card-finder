@@ -302,7 +302,7 @@ export default function MtgCard({
           />
         )}
         {showOverlay && (
-          <div className="absolute inset-0 h-full">
+          <div className="absolute inset-0 z-30 h-full">
             <CardOverlay />
           </div>
         )}
